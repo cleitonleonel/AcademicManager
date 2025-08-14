@@ -1,0 +1,112 @@
+{
+  "title": "Gestão de Projetos: Conceitos, Estrutura e Ciclo de Vida",
+  "sections": [
+    {
+      "name": "Introdução",
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "A gestão de projetos é uma disciplina que visa planejar, organizar e controlar recursos para atingir objetivos específicos dentro de um prazo e orçamento definidos. Neste trabalho, serão abordados conceitos fundamentais de projeto, a utilidade da gestão de projetos e a descrição do ciclo de vida de um projeto."
+        }
+      ]
+    },
+    {
+      "name": "Desenvolvimento",
+      "blocks": [
+        {
+          "type": "subtitle",
+          "text": "Definição de Projeto",
+          "align": "L",
+          "font": {
+            "style": "B",
+            "size": 14
+          }
+        },
+        {
+          "type": "paragraph",
+          "text": "Um projeto é um esforço temporário empreendido para criar um produto, serviço ou resultado único. Ele possui início e fim definidos, objetivos claros e recursos previamente estabelecidos."
+        },
+        {
+          "type": "paragraph",
+          "text": "Exemplo prático: Desenvolvimento de um aplicativo móvel para gestão financeira pessoal. O escopo inclui funcionalidades como cadastro de despesas e receitas, geração de relatórios e integração com contas bancárias."
+        },
+        {
+          "type": "image",
+          "path": "imagem_1",
+          "text": "Estrutura Analítica do Projeto (E.A.P) — Aplicativo de Gestão Financeira"
+        },
+        {
+          "type": "subtitle",
+          "text": "Objetivos da Gestão de Projetos",
+          "align": "L",
+          "font": {
+            "style": "B",
+            "size": 14
+          }
+        },
+        {
+          "type": "paragraph",
+          "text": "A gestão de projetos serve para garantir que os objetivos sejam alcançados de forma eficiente, minimizando riscos e otimizando recursos. Ela permite monitorar o progresso, assegurar a qualidade e alinhar a equipe aos objetivos estratégicos."
+        },
+        {
+          "type": "image",
+          "path": "imagem_2",
+          "text": "Representação visual dos benefícios da gestão de projetos"
+        },
+        {
+          "type": "subtitle",
+          "text": "Ciclo de Vida do Projeto",
+          "align": "L",
+          "font": {
+            "style": "B",
+            "size": 14
+          }
+        },
+        {
+          "type": "paragraph",
+          "text": "O ciclo de vida de um projeto é composto por fases sequenciais que orientam seu desenvolvimento, desde a concepção até o encerramento. As fases comuns incluem: iniciação, planejamento, execução, monitoramento e encerramento."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Iniciação — Definição do escopo e objetivos.",
+            "Planejamento — Detalhamento de tarefas, prazos e recursos.",
+            "Execução — Realização das atividades planejadas.",
+            "Monitoramento — Acompanhamento e ajustes no andamento.",
+            "Encerramento — Finalização e avaliação dos resultados."
+          ]
+        },
+        {
+          "type": "image",
+          "path": "imagem_3",
+          "text": "Fluxo do ciclo de vida de um projeto"
+        }
+      ]
+    },
+    {
+      "name": "Conclusão",
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "A compreensão do conceito de projeto, associada a uma gestão eficiente e a um ciclo de vida bem definido, é essencial para o sucesso de qualquer iniciativa. Uma boa gestão de projetos aumenta a probabilidade de alcançar os objetivos, reduz custos e melhora a satisfação das partes interessadas."
+        }
+      ]
+    },
+    {
+      "name": "Referências",
+      "blocks": [
+        {
+          "type": "list",
+          "items": [
+            "PMI. Um Guia do Conhecimento em Gerenciamento de Projetos (Guia PMBOK). 6. ed. Newtown Square: Project Management Institute, 2017.",
+            "KERZNER, Harold. Gestão de Projetos: as melhores práticas. Porto Alegre: Bookman, 2017.",
+            "VARGAS, Ricardo. Manual Prático do Plano de Projeto. Rio de Janeiro: Brasport, 2016.",
+            "HEAGNEY, Joseph. Fundamentals of Project Management. New York: AMACOM, 2016.",
+            "SILVEIRA, João. Introdução à Gestão de Projetos. São Paulo: Atlas, 2020."
+          ]
+        }
+      ]
+    }
+  ]
+}
+
