@@ -27,7 +27,7 @@
 - **Integração HTTP**: Comunicação com APIs externas via `requests`.
 - **Arquitetura Modular**: Estrutura organizada em módulos (`core`, `services`, `ui`, `utils`) para escalabilidade.
 - **Gestão de Projetos Acadêmicos**: Organização de trabalhos, instruções e arquivos de fontes e anexos.
-- **Python Moderno**: Compatível com Python 3.12+.
+- **Python Moderno**: Compatível com Python 3.10+.
 
 ---
 
@@ -38,7 +38,32 @@
 - Python 3.10 ou superior
 - Poetry (para gerenciamento de dependências)
 
+### Instalação via pip
+
+```bash
+# Clone o repositório
+git clone https://github.com/cleitonleonel/AcademicManager.git
+cd academic_manager
+
+# Crie um ambiente virtual (opcional, mas recomendado)
+python -m venv venv_academic
+
+# Ative o ambiente virtual
+source venv_academic/bin/activate  # Linux/macOS
+venv_academic\Scripts\activate    # Windows
+
+# Atualize o pip
+python -m pip install --upgrade pip
+
+# Instale as dependências
+pip install -r requirements.txt
+```
+
 ### Instalação via Poetry
+
+Para instalar o Poetry, siga as instruções em https://python-poetry.org/docs/#installation.
+
+Depois, clone o repositório e instale as dependências:
 
 ```bash
 # Clone o repositório
@@ -47,9 +72,6 @@ cd academic_manager
 
 # Instale as dependências
 poetry install
-
-# Ative o ambiente virtual
-poetry shell
 ```
 
 ### Obtendo a chave de api do google studio
