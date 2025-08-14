@@ -27,9 +27,6 @@ def get_template_json(assignment: str, ignore_image: bool, project_name: str) ->
     :type assignment: str
     :return: A string containing the generated JSON template or None if an error occurs.
     """
-
-
-
     prompt = get_basic_prompt(assignment) if ignore_image else get_full_prompt(assignment)
 
     prompt_file_path = Config.BASE_DIR / project_name / "prompt.txt"

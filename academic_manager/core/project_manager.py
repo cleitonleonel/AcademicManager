@@ -91,6 +91,20 @@ class ProjectManager:
         with open(instructions_file, "w", encoding="utf-8") as f:
             f.write(Config.DEFAULT_INSTRUCTIONS)
 
+    def _save_assignment_file(self, project_name: str, assignment_path: Path, content: str) -> None:
+        """
+        Saves the assignment content to a specified file path.
+        :param project_name: The name of the project associated with the assignment.
+        :param assignment_path: The file system path where the assignment content
+            will be saved.
+        :param content: The content of the assignment to be written to the file.
+        :return: None
+        """
+        assignment_path.mkdir(parents=True, exist_ok=True)
+        assignment_file = assignment_path / f'{project_name}.txt'
+        with open(assignment_file, "w", encoding="utf-8") as f:
+            f.write(content)
+
     def _collect_metadata(self, existing_metadata: Optional[Dict] = None) -> Dict:
         """
         Collects and updates metadata for a project interactively.
@@ -138,12 +152,18 @@ class ProjectManager:
         default_name = f"project_{str(next_number).zfill(3)}"
 
         project_name = UserInterface.input_with_default("Nome do projeto", default_name)
-        project_path = Config.BASE_DIR / project_name.replace(" ", "_")
+        project_name = project_name.strip().replace(" ", "_")
+        project_path = Config.BASE_DIR / project_name
 
+        assignment_content = UserInterface.input_with_default_multiline(
+            "Conteúdo da tarefa (pode ser deixado em branco se não houver):"
+        )
+        assignment_path = Config.BASE_DIR / "assignments"
         try:
             self._create_project_structure(project_path)
             metadata = self._collect_metadata()
             self._save_project_files(project_path, metadata)
+            self._save_assignment_file(project_name, assignment_path, assignment_content)
 
             print(f"\n✓ Novo projeto criado: {project_name}")
             return project_name, metadata
@@ -173,7 +193,6 @@ class ProjectManager:
             return None
 
         settings_file = Config.BASE_DIR / selected_project / "settings.json"
-
         try:
             with open(settings_file, "r", encoding="utf-8") as f:
                 existing_metadata = json.load(f)

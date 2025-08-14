@@ -27,6 +27,33 @@ class UserInterface:
         return user_input if user_input else default
 
     @staticmethod
+    def input_with_default_multiline(default: str) -> str:
+        """
+        Prompts the user for multiline input with a default value. The user can enter multiple lines of text,
+        and the input ends when the user types 'FIM' on a new line. If the user provides input, it is returned;
+        otherwise, the default value is returned.
+
+        :param default: The default value to return if the user provides no input.
+        :type default: str
+        :return: The user's input if provided, otherwise the default value.
+        :rtype: str
+        """
+        print(f"(Cole aqui o enunciado e digite 'FIM' em uma linha separada para finalizar):")
+        lines = []
+        while True:
+            line = input()
+            if line.strip() == 'FIM':
+                break
+            lines.append(line)
+
+        texto = "\n".join(lines)
+        if not texto.strip():
+            print(f"Nenhum texto fornecido. Usando valor padrão: {default}")
+            return default
+
+        return texto if texto else default
+
+    @staticmethod
     def select_from_list(items: List[str], prompt: str) -> Optional[str]:
         """
         This method allows a user to select an item from a list of strings by providing a numbered

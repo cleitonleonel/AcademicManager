@@ -19,6 +19,8 @@
 
 ---
 
+![academic_manager.gif](static/img/academic_manager.gif)
+
 ## 🚀 Características
 
 - **Geração de PDFs**: Criação de documentos acadêmicos usando `fpdf2`.
@@ -49,6 +51,13 @@ poetry install
 # Ative o ambiente virtual
 poetry shell
 ```
+
+### Obtendo a chave de api do google studio
+ - Acesse o link https://aistudio.google.com e obtenha sua chave de api
+ - Renomeie o arquivo `config-dev.ini` para `config.ini`
+ - Adicione a chave de api no arquivo `config.ini` na chave `api_key`
+ - Salve o arquivo
+ - Reinicie o projeto
 
 ---
 
