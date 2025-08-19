@@ -24,6 +24,9 @@ class Config:
     ENABLE_DOWNLOADS = config["DEFAULT"].getboolean("enable_downloads")
 
     DEFAULT_METADATA = {
+        "instituicao": "FUNDAÇÃO DE ASSISTÊNCIA E EDUCAÇÃO",
+        "unidade": "CENTRO UNIVERSITÁRIO ESPÍRITO-SANTENSE",
+        "tipo": "GRADUAÇÃO",
         "curso": "[NOME DO CURSO AQUI]",
         "aluno": "[NOME DO ALUNO AQUI]",
         "titulo": "[TÍTULO DO TRABALHO AQUI]",

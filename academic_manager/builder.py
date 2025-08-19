@@ -73,7 +73,7 @@ def img(
 
     :param path: File path to the image.
     :type path: str
-    :param position: Position attribute for the image. Default value is "center".
+    :param position: Position attribute for the image. The default value is "center".
     :type position: str
     :param width: Width of the image in pixels.
     :type width: int
@@ -106,7 +106,7 @@ def img_right(
     """
     Generates an image alignment configuration for positioning the image to the right.
 
-    This function simplifies aligning an image on the right side of content. It constructs
+    This function simplifies aligning an image on the right side of the content. It constructs
     a configuration dictionary with alignment set to "right". The function relies on the
     lower-level `img` function for processing.
 
@@ -307,9 +307,9 @@ class AcademicWork(FPDF):
         self.set_font('Times', 'B', 12)
 
         cover_texts = [
-            "FUNDAÇÃO DE ASSISTÊNCIA E EDUCAÇÃO",
-            "CENTRO UNIVERSITÁRIO ESPÍRITO-SANTENSE",
-            f"CURSO DE GRADUAÇÃO EM {self.data['curso'].upper()}",
+            self.data['instituicao'].upper(),
+            self.data['unidade'].upper(),
+            f"CURSO DE {self.data['tipo'].upper()} EM {self.data['curso'].upper()}",
         ]
 
         for text in cover_texts:
@@ -337,7 +337,6 @@ class AcademicWork(FPDF):
            and aligned with justification alignment.
         4. Location and year information centered at the bottom.
 
-        :param None
         :return: None
         """
         self.add_page()
@@ -352,8 +351,8 @@ class AcademicWork(FPDF):
         self.set_font('Times', '', 11)
         self.set_left_margin(100)
         justification_text = (
-            f"Trabalho acadêmico do Curso de Graduação em {self.data['curso']} "
-            f"apresentado ao Centro Universitário Espírito-santense como parte "
+            f"Trabalho acadêmico do Curso de {self.data['tipo'].capitalize()} em {self.data['curso']} "
+            f"apresentado ao {self.data['unidade'].capitalize()} como parte "
             f"das exigências da Disciplina {self.data['disciplina'].capitalize()},"
             f" sob orientação do(a) Professor(a) {self.data['orientador']}."
         )
@@ -374,7 +373,7 @@ class AcademicWork(FPDF):
         about given sections, such as their titles, associated page numbers, and hyperlinks.
         Each section is styled with a determined number of dots for alignment.
 
-        :raises ValueError: If section title or page number is invalid.
+        :raises ValueError: If the section title or page number is invalid.
         """
         self.add_page()
         self.set_font('Times', 'B', 12)
@@ -879,7 +878,7 @@ class Templates:
     ) -> List[Dict[str, Any]]:
         """
         Generates a structured layout section consisting of styled text and images in
-        various configurations for display purposes including right-aligned, left-aligned,
+        various configurations for display purposes, including right-aligned, left-aligned,
         above, and below positions. It also demonstrates a paragraph between images for
         additional context or layout illustration.
 
