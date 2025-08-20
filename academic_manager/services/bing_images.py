@@ -63,7 +63,7 @@ def process_json(json_data: dict, project_name: str):
     for section in json_data.get("sections", []):
         for block in section.get("blocks", []):
             if block.get("type") == "image":
-                description = block.get("text", "")
+                description = block.get("query", "")
                 placeholder = f"imagem_{count}"
                 print(f"[>] Buscando imagem para: {description}")
                 image_url = get_image_url(description)

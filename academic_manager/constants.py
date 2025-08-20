@@ -26,7 +26,8 @@ def get_full_prompt(assignment: str) -> str:
           "blocks": [
             {{
               "type": "paragraph",
-              "text": "Texto do parágrafo"
+              "text": "Texto do parágrafo",
+              "is_code": False | True (Se 'text' for um código ou bloco de código então use True)
             }},
             {{
               "type": "subtitle",
@@ -34,16 +35,21 @@ def get_full_prompt(assignment: str) -> str:
               "align": "L" | "C" | "R" | "J",
               "font": {{
                 "style": "B" | "I" | "U" | "BI" | "BU" | "IB",
-                "size": número_em_porcentagem_relativa_ao_pdf (padrão 12 se não especificado)
+                "size": número_em_porcentagem_relativa_ao_pdf (usar padrão 12 se não especificado)
               }}
             }},
             {{
               "type": "image",
               "position": "left" | "right" | "above" | "below",
-              "path": numero_da_imagem (ex: %(imagem_1)s, %(imagem_2)s, etc.) no máximo 3 .,
-              "width": número_em_porcentagem_relativa_ao_pdf (padrão 100 se não especificado) obrigatório para todas as imagens,
-              "height": número_em_porcentagem_relativa_ao_pdf (padrão 80 se não especificado) obrigatório para todas as imagens,
-              "text": "Legenda ou texto explicativo da imagem"
+              "path": numero_da_imagem (ex: %(imagem_1)s, %(imagem_2)s, etc.),
+              "width": número_em_porcentagem_relativa_ao_pdf (usar padrão 100 se não especificado),
+              "height": número_em_porcentagem_relativa_ao_pdf (usar padrão 80 se não especificado),
+              "text": "Legenda ou texto explicativo da imagem",
+              "query": "Termo de pesquisa para a imagem seguindo contexto do trabalho",
+              "font": {{
+                "style": "I",
+                "size": 12
+              }}
             }},
             {{
               "type": "list",
@@ -112,7 +118,8 @@ def get_basic_prompt(assignment: str) -> str:
           "blocks": [
             {{
               "type": "paragraph",
-              "text": "Texto do parágrafo"
+              "text": "Texto do parágrafo",
+              "is_code": False | True (Se 'text' for um código ou bloco de código então use True)
             }},
             {{
               "type": "subtitle",

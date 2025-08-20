@@ -1,4 +1,5 @@
-from typing import Dict
+from typing import Dict, Optional
+from pathlib import Path
 from academic_manager.config.settings import Config
 from academic_manager.builder import AcademicWork
 
@@ -14,7 +15,24 @@ class PDFGenerator:
     """
 
     @staticmethod
-    def generate_pdf(project_name: str, metadata: Dict, template: Dict) -> bool:
+    def resolve_path(path: Path) -> Optional[str]:
+        """
+        Resolves the given file system path to its string representation if it exists.
+
+        This method checks whether the specified path exists in the file system and,
+        if it does, returns the string representation of the path in POSIX format.
+        If the path does not exist, it returns None.
+
+        Args:
+            path (Path): The file system path to resolve.
+
+        Returns:
+            Optional[str]: The POSIX string representation of the path if it exists,
+            or None otherwise.
+        """
+        return path.as_posix() if path.exists() else None
+
+    def generate_pdf(self, project_name: str, metadata: Dict, template: Dict) -> bool:
         """
         Generates a PDF based on provided metadata and template.
 
@@ -44,11 +62,13 @@ class PDFGenerator:
             project_path = Config.BASE_DIR / project_name
             filename = metadata["titulo"].replace(" ", "_").capitalize()
 
-            logo_path = project_path / "sources" / "logo.png"
-            mask_path = project_path / "sources" / "mask.png"
+            logo_path = self.resolve_path(project_path / "sources" / "logo.png")
+            mask_path = self.resolve_path(project_path / "sources" / "mask.png")
+
             pdf_path = project_path / f"{filename}.pdf"
 
-            pdf = AcademicWork(metadata, str(logo_path), str(mask_path))
+            pdf = AcademicWork(metadata, logo_path, mask_path)
+
             pdf.add_cover()
             pdf.add_back_cover()
             pdf.add_page()

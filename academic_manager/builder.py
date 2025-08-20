@@ -231,13 +231,18 @@ class AcademicWork(FPDF):
     :type anchors: Dict[str, int]
     """
 
-    def __init__(self, data: Dict[str, Any], logo_path: str, mask_path: Optional[str] = None):
+    def __init__(
+            self,
+            data: Dict[str, Any],
+            logo_path: Optional[str] = None,
+            mask_path: Optional[str] = None
+    ):
         """
         Initialize the AcademicWork instance.
 
         Args:
             data: Dictionary containing course, student, title, city, year, discipline, and advisor information.
-            logo_path: Path to the logo image.
+            logo_path: Path to the logo image (optional).
             mask_path: Path to the mask image (optional).
         """
         super().__init__()
@@ -294,8 +299,7 @@ class AcademicWork(FPDF):
         :return: None
         """
         self.add_page()
-
-        if self.logo_path:
+        if self.logo_path is not None:
             try:
                 self.image(self.logo_path, x=(self.w - 40) / 2, y=20, w=40)
                 self.ln(50)
@@ -447,6 +451,10 @@ class AcademicWork(FPDF):
         family = font.get("family", "Times")
         style = font.get("style") or ""
         size = font.get("size", default_size)
+        if item.get("is_code"):
+            family = 'Courier'
+            self.set_fill_color(240, 240, 240)
+
         self.set_font(family, style, size)
 
         color = item.get("color", (0, 0, 0))
@@ -512,9 +520,11 @@ class AcademicWork(FPDF):
             item_type = item.get("type", "paragraph")
 
             if item_type == "paragraph":
+                fill = item.get("is_code", False) or False
                 self._apply_font_and_color(item, default_size=12)
+
                 line_h = item.get("line_height", 6)
-                self.multi_cell(0, line_h, item.get("text", ""), align=item.get("align", "J"))
+                self.multi_cell(0, line_h, item.get("text", ""), align=item.get("align", "J"), fill=fill)
                 self.ln(2)
                 self.set_text_color(0, 0, 0)
                 self.set_font('Times', '', 12)
@@ -527,7 +537,7 @@ class AcademicWork(FPDF):
                 self.set_text_color(0, 0, 0)
                 self.set_font('Times', '', 12)
 
-            elif item_type == "image":
+            elif item_type == "image" and section_title in ['DESENVOLVIMENTO']:
                 pos = item.get("position", "right")
                 img_w = item.get("width", 30)
                 img_h = item.get("height", 20)
@@ -538,6 +548,8 @@ class AcademicWork(FPDF):
 
                 if pos in ("left", "right") and text:
                     y_start = self.get_y()
+                    current_y = y_start
+                    line_index = 0
 
                     if pos == "left":
                         img_x = self.l_margin
@@ -550,16 +562,8 @@ class AcademicWork(FPDF):
 
                     self._apply_font_and_color(item, default_size=12)
 
-                    try:
-                        self.image(img_path, x=img_x, y=y_start, w=img_w, h=img_h)
-                    except Exception:
-                        pass
-
                     lines = self.multi_cell(text_width, line_h, text, dry_run=True, output="LINES")
                     max_lines_beside_image = int(img_h // line_h)
-
-                    current_y = y_start
-                    line_index = 0
 
                     while line_index < len(lines) and line_index < max_lines_beside_image:
                         line = lines[line_index]
@@ -585,6 +589,12 @@ class AcademicWork(FPDF):
                             self.cell(text_width, line_h, line, align=align_for_cell)
                             current_y += line_h
                         line_index += 1
+
+                    else:
+                        try:
+                            self.image(img_path, x=img_x, y=y_start, w=img_w, h=img_h)
+                        except Exception:
+                            pass
 
                     if line_index < len(lines):
                         final_y = y_start + img_h + 2
