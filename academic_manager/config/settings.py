@@ -22,6 +22,8 @@ class Config:
     BASE_DIR = Path("academic_projects")
     ASSIGNMENTS_DIR = BASE_DIR / "assignments"
     ENABLE_DOWNLOADS = config["DEFAULT"].getboolean("enable_downloads")
+    IGNORE_MASKS = config["DEFAULT"].getboolean("ignore_masks")
+    IGNORE_LOGO = config["DEFAULT"].getboolean("ignore_logo")
 
     DEFAULT_METADATA = {
         "instituicao": "FUNDAÇÃO DE ASSISTÊNCIA E EDUCAÇÃO",

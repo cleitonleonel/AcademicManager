@@ -1,3 +1,4 @@
+import re
 from fpdf import FPDF
 from fpdf.enums import XPos, YPos
 from typing import Dict, List, Union, Tuple, Optional, Any
@@ -274,13 +275,13 @@ class AcademicWork(FPDF):
 
         The method adjusts the vertical position of the cursor to ensure the
         footer is always printed at the bottom of the page. It sets the font
-        to 'Times' with a font size of 10 and renders the page number centered
+        to 'Arial' with a font size of 10 and renders the page number centered
         on the footer.
 
         :return: None
         """
         self.set_y(-15)
-        self.set_font('Times', '', 10)
+        self.set_font('Arial', '', 10)
         self.cell(0, 10, f'{self.page_no()}', align='C')
 
     def add_cover(self) -> None:
@@ -308,7 +309,7 @@ class AcademicWork(FPDF):
         else:
             self.ln(20)
 
-        self.set_font('Times', 'B', 12)
+        self.set_font('Arial', 'B', 12)
 
         cover_texts = [
             self.data['instituicao'].upper(),
@@ -320,13 +321,29 @@ class AcademicWork(FPDF):
             self.cell(0, 8, text, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
 
         self.ln(30)
-        self.cell(0, 8, self.data['aluno'].upper(), new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
+
+        alunos = [a.strip() for a in self.data['aluno'].replace(' e ', ',').replace('\n', ',').split(',') if a.strip()]
+
+        if len(alunos) == 1:
+            self.cell(0, 8, self.data['aluno'].upper(), new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
+
         self.ln(30)
         self.multi_cell(0, 8, self.data['titulo'].upper(), new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
-        self.ln(60)
+
+        if len(alunos) > 1:
+            self.ln(40)
+            self.set_font('Arial', '', 12)
+            alunos = '\n'.join(alunos)
+            self.multi_cell(0, 5, alunos, align='R')
+            self.ln(30)
+        else:
+            self.ln(60)
+
+        self.set_font('Arial', 'B', 12)
         self.cell(0, 8, self.data['local'].upper(), new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
         self.ln(5)
         self.cell(0, 8, str(self.data['ano']), new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
+        self.set_font('Arial', '', 12)
 
     def add_back_cover(self) -> None:
         """
@@ -345,14 +362,17 @@ class AcademicWork(FPDF):
         """
         self.add_page()
         self.ln(40)
+        self.set_font('Arial', 'B', 12)
 
-        self.set_font('Times', 'B', 12)
-        self.cell(0, 8, self.data['aluno'].upper(), new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
+        alunos = [a.strip() for a in self.data['aluno'].replace(' e ', ',').replace('\n', ',').split(',') if a.strip()]
+
+        if len(alunos) == 1:
+            self.cell(0, 8, self.data['aluno'].upper(), new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
+
         self.ln(30)
         self.multi_cell(0, 8, self.data['titulo'].upper(), new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
         self.ln(30)
-
-        self.set_font('Times', '', 11)
+        self.set_font('Arial', '', 11)
         self.set_left_margin(100)
         justification_text = (
             f"Trabalho acadêmico do Curso de {self.data['tipo'].capitalize()} em {self.data['curso']} "
@@ -361,10 +381,16 @@ class AcademicWork(FPDF):
             f" sob orientação do(a) Professor(a) {self.data['orientador']}."
         )
         self.multi_cell(0, 6, justification_text, align='J')
+
+        if len(alunos) > 1:
+            self.ln(10)
+            self.set_font('Arial', '', 12)
+            alunos = '\n'.join(alunos)
+            self.multi_cell(0, 5, alunos, align='R')
+
         self.set_left_margin(25)
         self.ln(40)
-
-        self.set_font('Times', 'B', 12)
+        self.set_font('Arial', 'B', 12)
         self.cell(0, 8, self.data['local'].upper(), new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
         self.ln(5)
         self.cell(0, 8, str(self.data['ano']), new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
@@ -380,10 +406,10 @@ class AcademicWork(FPDF):
         :raises ValueError: If the section title or page number is invalid.
         """
         self.add_page()
-        self.set_font('Times', 'B', 12)
+        self.set_font('Arial', 'B', 12)
         self.cell(0, 10, 'SUMÁRIO', new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
         self.ln(20)
-        self.set_font('Times', '', 12)
+        self.set_font('Arial', '', 12)
 
         for title, page, link_anchor in self.sections:
             necessary_dots = 60 - len(title) - len(str(page))
@@ -411,11 +437,11 @@ class AcademicWork(FPDF):
         """
         current_page = self.page_no()
         self.page = summary_page
-        self.set_font('Times', 'B', 13)
+        self.set_font('Arial', 'B', 13)
         self.set_y(25)
         self.cell(0, 10, 'SUMÁRIO', new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
         self.ln(20)
-        self.set_font('Times', '', 12)
+        self.set_font('Arial', '', 12)
 
         for title, page, link_anchor in self.sections:
             title_width = self.get_string_width(title)
@@ -448,7 +474,7 @@ class AcademicWork(FPDF):
             The font size being used
         """
         font = item.get("font", {})
-        family = font.get("family", "Times")
+        family = font.get("family", "Arial")
         style = font.get("style") or ""
         size = font.get("size", default_size)
         if item.get("is_code"):
@@ -505,12 +531,12 @@ class AcademicWork(FPDF):
 
         y = self.get_y()
         self.set_link(link_idx, page=self.page_no(), y=y)
-        self.set_font('Times', 'B', 12)
+        self.set_font('Arial', 'B', 12)
         self.cell(0, 10, section_title, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
         self.ln(10)
 
         if isinstance(content, str):
-            self.set_font('Times', '', 12)
+            self.set_font('Arial', '', 12)
             self.multi_cell(0, 6, content, align='J')
             return
 
@@ -520,14 +546,18 @@ class AcademicWork(FPDF):
             item_type = item.get("type", "paragraph")
 
             if item_type == "paragraph":
-                fill = item.get("is_code", False) or False
-                self._apply_font_and_color(item, default_size=12)
-
-                line_h = item.get("line_height", 6)
-                self.multi_cell(0, line_h, item.get("text", ""), align=item.get("align", "J"), fill=fill)
-                self.ln(2)
-                self.set_text_color(0, 0, 0)
-                self.set_font('Times', '', 12)
+                if section_title in ['REFERÊNCIAS']:
+                    references_list = item.get("text", "").strip().split('\n')
+                    sorted_refs = self.sort_references_alphabetically(references_list)
+                    self._format_and_render_reference(sorted_refs)
+                else:
+                    fill = item.get("is_code", False) or False
+                    self._apply_font_and_color(item, default_size=12)
+                    line_h = item.get("line_height", 6)
+                    self.multi_cell(0, line_h, item.get("text", ""), align=item.get("align", "J"), fill=fill)
+                    self.ln(2)
+                    self.set_text_color(0, 0, 0)
+                    self.set_font('Arial', '', 12)
 
             elif item_type == "subtitle":
                 self._apply_font_and_color(item, default_size=14)
@@ -535,7 +565,7 @@ class AcademicWork(FPDF):
                 self.multi_cell(0, line_h, item.get("text", ""), align=item.get("align", "L"))
                 self.ln(3)
                 self.set_text_color(0, 0, 0)
-                self.set_font('Times', '', 12)
+                self.set_font('Arial', '', 12)
 
             elif item_type == "image" and section_title in ['DESENVOLVIMENTO']:
                 pos = item.get("position", "right")
@@ -608,7 +638,7 @@ class AcademicWork(FPDF):
 
                     self.set_xy(self.l_margin, final_y + 5)
                     self.set_text_color(0, 0, 0)
-                    self.set_font('Times', '', 12)
+                    self.set_font('Arial', '', 12)
 
                 elif pos in ("left", "right") and not text:
                     img_x = self.l_margin if pos == "left" else (self.w - self.r_margin - img_w)
@@ -630,7 +660,7 @@ class AcademicWork(FPDF):
                         self._apply_font_and_color(item)
                         self.multi_cell(0, line_h, text, align=item.get("align", "J"))
                         self.set_text_color(0, 0, 0)
-                        self.set_font('Times', '', 12)
+                        self.set_font('Arial', '', 12)
                         self.ln(3)
 
                 elif pos == "below":
@@ -638,7 +668,7 @@ class AcademicWork(FPDF):
                         self._apply_font_and_color(item)
                         self.multi_cell(0, line_h, text, align=item.get("align", "J"))
                         self.set_text_color(0, 0, 0)
-                        self.set_font('Times', '', 12)
+                        self.set_font('Arial', '', 12)
                         self.ln(2)
 
                     img_x = self.l_margin + (page_width - img_w) / 2
@@ -658,13 +688,132 @@ class AcademicWork(FPDF):
 
             elif item_type == "list":
                 self.set_text_color(0, 0, 0)
-                self.set_font('Times', '', 12)
-                for reference in item.get("items", []):
-                    self.multi_cell(0, 6, reference.replace("—", "-"), align="J")
+                self.set_font('Arial', '', 12)
+                for text_line in item.get("items", []):
+                    self.multi_cell(0, 6, text_line.replace("—", "-"), align="J")
                     self.ln(2)
 
         self.set_text_color(0, 0, 0)
-        self.set_font('Times', '', 12)
+        self.set_font('Arial', '', 12)
+
+
+    def _format_and_render_reference(self, references: list) -> str:
+        """
+        Formats and renders a list of references by applying specific transformation rules
+        to the reference text before rendering it. The function adjusts formatting specifics
+        such as authors, titles, subtitles, and editions. Proper wrapping and stylization
+        are applied to the given references.
+
+        Parameters:
+            references (list): A list of strings representing reference data to be formatted
+            and rendered.
+
+        Returns:
+            str: A formatted and rendered set of references as a string.
+        """
+        self.set_text_color(0, 0, 0)
+        self.set_font('Arial', '', 12)
+
+        for reference in references:
+            match = re.match(
+                r'^([^.]+\.)\s*(.+?)\.\s*(\d+\.?\s*ed\.?.+)$',
+                reference,
+                re.IGNORECASE
+            )
+
+            if match:
+                authors = match.group(1)
+                title = match.group(2).strip()
+                rest = match.group(3)
+
+                # Ajusta subtítulo (após : para minúscula)
+                if ':' in title:
+                    parts = title.split(':', 1)
+                    title = parts[0] + ': ' + parts[1].strip().lower()
+
+                formatted_ref = f"{authors} **{title}.** {rest}"
+            else:
+                parts = reference.split('. ', 2)
+                if len(parts) >= 3:
+                    title = parts[1]
+                    if ':' in title:
+                        title_parts = title.split(':', 1)
+                        title = title_parts[0] + ': ' + title_parts[1].strip().lower()
+                    formatted_ref = f"{parts[0]}. **{title}.** {parts[2]}"
+                elif len(parts) == 2:
+                    title = parts[1]
+                    if ':' in title:
+                        title_parts = title.split(':', 1)
+                        title = title_parts[0] + ': ' + title_parts[1].strip().lower()
+                    formatted_ref = f"{parts[0]}. **{title}**"
+                else:
+                    formatted_ref = reference
+
+            self._render_reference_with_bold(formatted_ref)
+            self.ln(6)
+
+    def sort_references_alphabetically(self, references: list) -> list:
+        """
+        Sorts a given list of references alphabetically by the surname of the first author.
+
+        This method processes a list of reference strings, extracts the surname of the
+        first author from each reference, and sorts the references alphabetically by
+        these surnames in a case-insensitive manner. It effectively cleans up each
+        reference and strips any leading numbering or formatting in the process.
+
+        Parameters:
+        references: list
+            A list of reference strings to be sorted. Each string is expected to
+            represent a reference and may optionally begin with a number followed
+            by a period or other formatting characters.
+
+        Returns:
+        list
+            A list of reference strings sorted alphabetically by the surname of the
+            first author. The original list remains unaffected.
+        """
+        refs_with_key = []
+        for reference in references:
+            clean_ref = re.sub(r'^\d+\.\s*', '', reference).strip()
+
+            match = re.match(r'^([^,]+)', clean_ref)
+            if match:
+                surname = match.group(1).strip().upper()
+                refs_with_key.append((surname, clean_ref))
+
+        refs_with_key.sort(key=lambda x: x[0])
+
+        return [reference for _, reference in refs_with_key]
+
+    def _render_reference_with_bold(self, text: str) -> None:
+        """
+        Splits the input text into parts based on double asterisks as delimiters and renders
+        each part with appropriate formatting in a multi-cell text layout. Text enclosed
+        within double asterisks is rendered in bold, while others remain in normal font. This
+        method updates the cursor position dynamically after processing each text segment.
+
+        Parameters:
+            text: str
+                The input text to be processed and rendered. Segments of text enclosed by
+                double asterisks (e.g., **bold**) will be displayed in bold font.
+
+        Returns:
+            None
+        """
+        parts = text.split('**')
+
+        for i, part in enumerate(parts):
+            if not part:
+                continue
+
+            if i % 2 == 1:
+                self.set_font('Arial', 'B', 12)
+            else:
+                self.set_font('Arial', '', 12)
+
+            self.write(6, part)
+
+        self.ln()
 
 
 class ContentBuilder:
@@ -701,7 +850,7 @@ class ContentBuilder:
             self,
             text: str,
             align: str = "J",
-            font_family: str = "Times",
+            font_family: str = "Arial",
             font_style: str = "",
             font_size: int = 12,
             color: Tuple[int, int, int] = (0, 0, 0),
@@ -717,7 +866,7 @@ class ContentBuilder:
         :type text: str
         :param align: The alignment of the paragraph. Defaults to "J".
         :type align: str
-        :param font_family: The font family of the paragraph text. Defaults to "Times".
+        :param font_family: The font family of the paragraph text. Defaults to "Arial".
         :type font_family: str
         :param font_style: The font style of the paragraph text. Defaults to an empty string.
         :type font_style: str
@@ -744,7 +893,7 @@ class ContentBuilder:
             self,
             text: str,
             align: str = "L",
-            font_family: str = "Times",
+            font_family: str = "Arial",
             font_style: str = "B",
             font_size: int = 14,
             color: Tuple[int, int, int] = (0, 0, 0),
@@ -755,7 +904,7 @@ class ContentBuilder:
 
         :param text: Subtitle text to be added.
         :param align: Alignment of the subtitle text. Defaults to "L".
-        :param font_family: Font family for the subtitle text. Defaults to "Times".
+        :param font_family: Font family for the subtitle text. Defaults to "Arial".
         :param font_style: Font style for the subtitle text. Defaults to "B".
         :param font_size: Font size for the subtitle text. Defaults to 14.
         :param color: RGB color value as a tuple for the subtitle text. Defaults to (0, 0, 0).

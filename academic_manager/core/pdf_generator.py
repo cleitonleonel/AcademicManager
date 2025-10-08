@@ -62,8 +62,10 @@ class PDFGenerator:
             project_path = Config.BASE_DIR / project_name
             filename = metadata["titulo"].replace(" ", "_").capitalize()
 
-            logo_path = self.resolve_path(project_path / "sources" / "logo.png")
-            mask_path = self.resolve_path(project_path / "sources" / "mask.png")
+            mask_path, logo_path = None, None
+            if not Config.IGNORE_MASKS or not Config.IGNORE_LOGO:
+                logo_path = self.resolve_path(project_path / "sources" / "logo.png")
+                mask_path = self.resolve_path(project_path / "sources" / "mask.png")
 
             pdf_path = project_path / f"{filename}.pdf"
 
