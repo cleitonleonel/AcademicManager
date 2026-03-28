@@ -4,20 +4,18 @@ import requests
 from academic_manager.config.settings import Config
 from academic_manager.constants import get_full_prompt, get_basic_prompt
 
-API_KEY = os.getenv("API_KEY")
-
 headers = {
     "Content-Type": "application/json",
 }
 
-url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+url = f"https://generativelanguage.googleapis.com/v1beta/models/{Config.MODEL}:generateContent"
 
 
 def get_template_json(assignment: str, ignore_image: bool, project_name: str) -> str | None:
     """
     Generate a JSON template based on a given assignment and process the server's response.
 
-    This function accepts a assignment, generates a corresponding prompt, sends it to a remote API,
+    This function accepts an assignment, generates a corresponding prompt, sends it to a remote API,
     parses the response, and saves it to a file if it can be interpreted as JSON.
 
     :param project_name: The name of the project for which the template is generated.
@@ -27,6 +25,9 @@ def get_template_json(assignment: str, ignore_image: bool, project_name: str) ->
     :type assignment: str
     :return: A string containing the generated JSON template or None if an error occurs.
     """
+    if not Config.API_KEY:
+        raise ValueError("API_KEY não encontrada nas variáveis de ambiente")
+
     prompt = get_basic_prompt(assignment) if ignore_image else get_full_prompt(assignment)
 
     prompt_file_path = Config.BASE_DIR / project_name / "prompt.txt"
@@ -46,17 +47,18 @@ def get_template_json(assignment: str, ignore_image: bool, project_name: str) ->
         }
     }
 
+    headers.update({"X-goog-api-key": Config.API_KEY})
+
     response = requests.post(
         url,
         headers=headers,
-        params={"key": API_KEY},
-        data=json.dumps(body)
+        json=body
     )
 
     if response.status_code == 200:
         result = response.json()
         result_text = result["candidates"][0]["content"]["parts"][0]["text"]
-        return result_text
+        return result_text.replace("–", "-")
     else:
         print("Erro:", response.status_code)
         print(response.text)

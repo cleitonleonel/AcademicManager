@@ -80,7 +80,7 @@ class PDFGenerator:
             for section in template['sections']:
                 name = section.get('name', '').upper()
                 content = section.get('blocks', '')
-                pdf.add_section(name, content=content)
+                pdf.add_section(name, content=content, ignore_img=Config.IGNORE_IMGS)
 
             pdf.write_summary_on_page(summary_page)
             pdf.output(str(pdf_path))

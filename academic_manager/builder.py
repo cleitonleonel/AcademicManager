@@ -203,6 +203,7 @@ def img_below(
     :return: A dictionary describing the image configuration.
     :rtype: dict
     """
+    # Erro ao gerar PDF:
     return img(path, "below", width, height, text, **kwargs)
 
 
@@ -329,6 +330,9 @@ class AcademicWork(FPDF):
 
         self.ln(30)
         self.multi_cell(0, 8, self.data['titulo'].upper(), new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
+        if self.data['subtitulo'] != "":
+            self.ln(10)
+            self.multi_cell(0, 8, self.data['subtitulo'].upper(), new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
 
         if len(alunos) > 1:
             self.ln(40)
@@ -387,9 +391,11 @@ class AcademicWork(FPDF):
             self.set_font('Arial', '', 12)
             alunos = '\n'.join(alunos)
             self.multi_cell(0, 5, alunos, align='R')
+            self.ln(20)
+        else:
+            self.ln(40)
 
         self.set_left_margin(25)
-        self.ln(40)
         self.set_font('Arial', 'B', 12)
         self.cell(0, 8, self.data['local'].upper(), new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
         self.ln(5)
@@ -514,7 +520,8 @@ class AcademicWork(FPDF):
     def add_section(
             self,
             section_title: str,
-            content: Union[str, List[Dict[str, Any]]] = ''
+            content: Union[str, List[Dict[str, Any]]] = '',
+            ignore_img: bool = False
     ) -> None:
         """
         Add a new section with optional content to the document.
@@ -544,7 +551,6 @@ class AcademicWork(FPDF):
 
         for item in content:
             item_type = item.get("type", "paragraph")
-
             if item_type == "paragraph":
                 if section_title in ['REFERÊNCIAS']:
                     references_list = item.get("text", "").strip().split('\n')
@@ -567,7 +573,7 @@ class AcademicWork(FPDF):
                 self.set_text_color(0, 0, 0)
                 self.set_font('Arial', '', 12)
 
-            elif item_type == "image" and section_title in ['DESENVOLVIMENTO']:
+            elif item_type == "image" and not ignore_img:
                 pos = item.get("position", "right")
                 img_w = item.get("width", 30)
                 img_h = item.get("height", 20)
@@ -697,7 +703,7 @@ class AcademicWork(FPDF):
         self.set_font('Arial', '', 12)
 
 
-    def _format_and_render_reference(self, references: list) -> str:
+    def _format_and_render_reference(self, references: list) -> None:
         """
         Formats and renders a list of references by applying specific transformation rules
         to the reference text before rendering it. The function adjusts formatting specifics
@@ -709,7 +715,7 @@ class AcademicWork(FPDF):
             and rendered.
 
         Returns:
-            str: A formatted and rendered set of references as a string.
+            None
         """
         self.set_text_color(0, 0, 0)
         self.set_font('Arial', '', 12)

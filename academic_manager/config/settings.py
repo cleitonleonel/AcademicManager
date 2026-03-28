@@ -1,14 +1,9 @@
-import os
 from datetime import datetime
 from pathlib import Path
 from configparser import ConfigParser
 
 config = ConfigParser()
 config.read("config.ini")
-
-os.environ["API_KEY"] = config["DEFAULT"]["api_key"]
-
-API_KEY = os.environ["API_KEY"]
 
 
 class Config:
@@ -21,9 +16,12 @@ class Config:
     """
     BASE_DIR = Path("academic_projects")
     ASSIGNMENTS_DIR = BASE_DIR / "assignments"
+    API_KEY = config["DEFAULT"]["api_key"]
+    MODEL = config["DEFAULT"]["model"]
     ENABLE_DOWNLOADS = config["DEFAULT"].getboolean("enable_downloads")
     IGNORE_MASKS = config["DEFAULT"].getboolean("ignore_masks")
     IGNORE_LOGO = config["DEFAULT"].getboolean("ignore_logo")
+    IGNORE_IMGS = config["DEFAULT"].getboolean("ignore_images")
 
     DEFAULT_METADATA = {
         "instituicao": "FUNDAÇÃO DE ASSISTÊNCIA E EDUCAÇÃO",
@@ -32,6 +30,7 @@ class Config:
         "curso": "[NOME DO CURSO AQUI]",
         "aluno": "[NOME DO ALUNO AQUI]",
         "titulo": "[TÍTULO DO TRABALHO AQUI]",
+        "subtitulo": "",
         "local": "[SUA CIDADE AQUI]",
         "ano": datetime.now().year,
         "disciplina": "[DISCIPLINA AQUI]",

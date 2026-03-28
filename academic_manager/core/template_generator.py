@@ -50,8 +50,13 @@ class TemplateGenerator:
             if Config.ENABLE_DOWNLOADS:
                 json_data = json.loads(template_response)
                 media_data = process_json(json_data, project_name)
-            template_formatted = template_response.replace("–", "-") % media_data
 
+            def safe_replace(template, data):
+                for k, v in data.items():
+                    template = template.replace(f"%({k})s", str(v))
+                return template
+
+            template_formatted = safe_replace(template_response, media_data)
             template_data = json.loads(template_formatted)
 
             with open(output_path, "w", encoding="utf-8") as f:
