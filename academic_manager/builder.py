@@ -228,7 +228,7 @@ class AcademicWork(FPDF):
     :ivar sections: List of sections with their titles, page numbers, and
         corresponding anchors for linking within the document.
     :type sections: List[Tuple[str, int, str]]
-    :ivar anchors: Dictionary mapping section anchors to their respective page
+    :ivar anchors: a Dictionary mapping section anchors to their respective page
         numbers for cross-referencing.
     :type anchors: Dict[str, int]
     """
@@ -237,7 +237,8 @@ class AcademicWork(FPDF):
             self,
             data: Dict[str, Any],
             logo_path: Optional[str] = None,
-            mask_path: Optional[str] = None
+            mask_path: Optional[str] = None,
+            options: Optional[Dict[str, Any]] = None
     ):
         """
         Initialize the AcademicWork instance.
@@ -251,6 +252,10 @@ class AcademicWork(FPDF):
         self.data = data
         self.logo_path = logo_path
         self.mask_path = mask_path
+        self.options = options or {}
+        
+        # Apply options
+        self.default_font = self.options.get('font', 'Arial')
         self.set_auto_page_break(auto=True, margin=20)
         self.set_margins(25, 25, 25)
         self.sections: List[Tuple[str, int, str]] = []
@@ -282,7 +287,7 @@ class AcademicWork(FPDF):
         :return: None
         """
         self.set_y(-15)
-        self.set_font('Arial', '', 10)
+        self.set_font(self.default_font, '', 10)
         self.cell(0, 10, f'{self.page_no()}', align='C')
 
     def add_cover(self) -> None:
@@ -295,7 +300,7 @@ class AcademicWork(FPDF):
 
         :param self: Refers to the current instance of the class.
 
-        :raises Exception: An exception is raised if the image specified by ``self.logo_path`` cannot
+        :raises Exception: An exception is raised if the image specified by "self.logo_path" cannot
             be loaded or displayed.
 
         :return: None
@@ -310,7 +315,7 @@ class AcademicWork(FPDF):
         else:
             self.ln(20)
 
-        self.set_font('Arial', 'B', 12)
+        self.set_font(self.default_font, 'B', 12)
 
         cover_texts = [
             self.data['instituicao'].upper(),
@@ -336,7 +341,7 @@ class AcademicWork(FPDF):
 
         if len(alunos) > 1:
             self.ln(40)
-            self.set_font('Arial', '', 12)
+            self.set_font(self.default_font, '', 12)
             alunos = '\n'.join(alunos)
             self.multi_cell(0, 5, alunos, align='R')
             self.ln(30)
@@ -366,7 +371,7 @@ class AcademicWork(FPDF):
         """
         self.add_page()
         self.ln(40)
-        self.set_font('Arial', 'B', 12)
+        self.set_font(self.default_font, 'B', 12)
 
         alunos = [a.strip() for a in self.data['aluno'].replace(' e ', ',').replace('\n', ',').split(',') if a.strip()]
 
@@ -376,7 +381,7 @@ class AcademicWork(FPDF):
         self.ln(30)
         self.multi_cell(0, 8, self.data['titulo'].upper(), new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
         self.ln(30)
-        self.set_font('Arial', '', 11)
+        self.set_font(self.default_font, '', 11)
         self.set_left_margin(100)
         justification_text = (
             f"Trabalho acadêmico do Curso de {self.data['tipo'].capitalize()} em {self.data['curso']} "
@@ -412,10 +417,10 @@ class AcademicWork(FPDF):
         :raises ValueError: If the section title or page number is invalid.
         """
         self.add_page()
-        self.set_font('Arial', 'B', 12)
+        self.set_font(self.default_font, 'B', 12)
         self.cell(0, 10, 'SUMÁRIO', new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
         self.ln(20)
-        self.set_font('Arial', '', 12)
+        self.set_font(self.default_font, '', 12)
 
         for title, page, link_anchor in self.sections:
             necessary_dots = 60 - len(title) - len(str(page))
@@ -552,15 +557,20 @@ class AcademicWork(FPDF):
         for item in content:
             item_type = item.get("type", "paragraph")
             if item_type == "paragraph":
+                text_line = item.get("text", "")
+                matches = re.findall(r'(?<!`)`([^`]+)`(?!`)', text_line)
                 if section_title in ['REFERÊNCIAS']:
-                    references_list = item.get("text", "").strip().split('\n')
+                    references_list = text_line.strip().split('\n')
                     sorted_refs = self.sort_references_alphabetically(references_list)
                     self._format_and_render_reference(sorted_refs)
+                elif matches:
+                    self.write_with_styles(text_line, 12)
+                    self.ln(6)
                 else:
                     fill = item.get("is_code", False) or False
                     self._apply_font_and_color(item, default_size=12)
                     line_h = item.get("line_height", 6)
-                    self.multi_cell(0, line_h, item.get("text", ""), align=item.get("align", "J"), fill=fill)
+                    self.multi_cell(0, line_h, text_line, align=item.get("align", "J"), fill=fill)
                     self.ln(2)
                     self.set_text_color(0, 0, 0)
                     self.set_font('Arial', '', 12)
@@ -696,11 +706,35 @@ class AcademicWork(FPDF):
                 self.set_text_color(0, 0, 0)
                 self.set_font('Arial', '', 12)
                 for text_line in item.get("items", []):
-                    self.multi_cell(0, 6, text_line.replace("—", "-"), align="J")
-                    self.ln(2)
+                    # self.multi_cell(0, 6, text_line.replace("—", "-"), align="J")
+                    # self.ln(2)
+                    text_line = text_line.replace("—", "-")
+                    self.set_x(self.l_margin)
+                    self.write_with_styles(text_line, 11)
+                    self.ln(8)
 
         self.set_text_color(0, 0, 0)
         self.set_font('Arial', '', 12)
+
+    def write_with_styles(self, text, font_size: int = 10):
+        # Divide em partes: **negrito** ou `italico`
+        parts = re.split(r'(\*\*.*?\*\*|`.*?`)', text)
+
+        for part in parts:
+            if part.startswith("**") and part.endswith("**"):
+                # Negrito
+                self.set_font('Arial', 'BI', font_size)
+                self.write(6, part[2:-2])
+
+            elif part.startswith("`") and part.endswith("`"):
+                # Itálico (para texto entre crases)
+                self.set_font('Arial', 'I', font_size)
+                self.write(6, part[1:-1])
+
+            else:
+                # Normal
+                self.set_font('Arial', '', 12)
+                self.write(6, part)
 
 
     def _format_and_render_reference(self, references: list) -> None:

@@ -11,7 +11,12 @@ headers = {
 url = f"https://generativelanguage.googleapis.com/v1beta/models/{Config.MODEL}:generateContent"
 
 
-def get_template_json(assignment: str, ignore_image: bool, project_name: str) -> str | None:
+def get_template_json(
+        assignment: str,
+        ignore_image: bool,
+        project_name: str,
+        api_key_override: str = None
+) -> str | None:
     """
     Generate a JSON template based on a given assignment and process the server's response.
 
@@ -25,12 +30,13 @@ def get_template_json(assignment: str, ignore_image: bool, project_name: str) ->
     :type assignment: str
     :return: A string containing the generated JSON template or None if an error occurs.
     """
-    if not Config.API_KEY:
-        raise ValueError("API_KEY não encontrada nas variáveis de ambiente")
+    api_key = api_key_override or Config.API_KEY
+    if not api_key:
+        raise ValueError("API_KEY não encontrada nas variáveis de ambiente ou na requisição")
 
     prompt = get_basic_prompt(assignment) if ignore_image else get_full_prompt(assignment)
 
-    prompt_file_path = Config.BASE_DIR / project_name / "prompt.txt"
+    prompt_file_path = Config.BASE_DIR / project_name / "prompt.md"
     with open(prompt_file_path, "w", encoding="utf-8") as f:
         f.write(prompt)
 
@@ -47,20 +53,23 @@ def get_template_json(assignment: str, ignore_image: bool, project_name: str) ->
         }
     }
 
-    headers.update({"X-goog-api-key": Config.API_KEY})
+    headers.update({"X-goog-api-key": api_key})
 
-    response = requests.post(
-        url,
-        headers=headers,
-        json=body
-    )
+    try:
+        response = requests.post(
+            url,
+            headers=headers,
+            json=body
+        )
 
-    if response.status_code == 200:
-        result = response.json()
-        result_text = result["candidates"][0]["content"]["parts"][0]["text"]
-        return result_text.replace("–", "-")
-    else:
-        print("Erro:", response.status_code)
-        print(response.text)
+        if response.status_code == 200:
+            result = response.json()
+            result_text = result["candidates"][0]["content"]["parts"][0]["text"]
+            return result_text.replace("–", "-")
+        else:
+            print("Erro:", response.status_code)
+            print(response.text)
+    except Exception as e:
+        print(f"Erro na chamada da API: {e}")
 
     return None

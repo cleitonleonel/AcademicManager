@@ -1,0 +1,18 @@
+services:
+  academic-manager:
+    build: .
+    container_name: academic_manager_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./academic_projects:/app/academic_projects
+      - ./config.ini:/app/config.ini
+      - ./static:/app/static
+    restart: always
+    environment:
+      - PYTHONUNBUFFERED=1
+      - APP_ENV=production
+
+networks:
+  default:
+    name: academic_manager_net

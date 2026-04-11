@@ -32,7 +32,13 @@ class PDFGenerator:
         """
         return path.as_posix() if path.exists() else None
 
-    def generate_pdf(self, project_name: str, metadata: Dict, template: Dict) -> bool:
+    def generate_pdf(
+            self,
+            project_name: str,
+            metadata: Dict,
+            template: Dict,
+            options: Optional[Dict] = None
+    ) -> bool:
         """
         Generates a PDF based on provided metadata and template.
 
@@ -69,7 +75,7 @@ class PDFGenerator:
 
             pdf_path = project_path / f"{filename}.pdf"
 
-            pdf = AcademicWork(metadata, logo_path, mask_path)
+            pdf = AcademicWork(metadata, logo_path, mask_path, options=options)
 
             pdf.add_cover()
             pdf.add_back_cover()
@@ -80,7 +86,11 @@ class PDFGenerator:
             for section in template['sections']:
                 name = section.get('name', '').upper()
                 content = section.get('blocks', '')
-                pdf.add_section(name, content=content, ignore_img=Config.IGNORE_IMGS)
+                pdf.add_section(
+                    name,
+                    content=content,
+                    ignore_img=Config.IGNORE_IMGS
+                )
 
             pdf.write_summary_on_page(summary_page)
             pdf.output(str(pdf_path))

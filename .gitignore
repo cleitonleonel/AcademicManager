@@ -1,3 +1,8 @@
 academic_projects
-tests
 config.ini
+__pycache__
+__legacy__
+venv_academic
+venv
+.env
+.venv

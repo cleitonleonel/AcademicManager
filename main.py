@@ -1,3 +1,4 @@
+import sys
 from academic_manager.core import AcademicManager
 
 
@@ -5,13 +6,26 @@ def main():
     """
     The main entry point of the application.
 
-    This function initializes an `AcademicManager` instance and starts its execution
-    flow. It is designed to handle the `KeyboardInterrupt` exception gracefully,
-    providing feedback to the user when the application is interrupted manually.
+    Modes:
+      python main.py - Interactive CLI mode.
+      python main.py --web - Start the FastAPI web server.
 
-    :raises KeyboardInterrupt: When the user manually interrupts the application
-        by pressing a keyboard combination (e.g., Ctrl+C).
+    :raises KeyboardInterrupt: When the user manually interrupts the CLI with Ctrl+C.
     """
+    if "--web" in sys.argv:
+        import uvicorn
+        print("🌐 Iniciando Academic Manager no modo Web...")
+        print("   Acesse: http://localhost:8000")
+        print("   Docs:   http://localhost:8000/docs")
+        uvicorn.run(
+            "api.main:app",
+            host="0.0.0.0",
+            port=8000,
+            reload=True,
+            log_level="info",
+        )
+        return
+
     try:
         AcademicManager().run()
     except KeyboardInterrupt:

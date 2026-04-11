@@ -1,205 +1,131 @@
-# Academic Manager
+# Academic Manager 🎓
 
 <p align="center">
-  <a href="https://github.com/cleitonleonel/SmartBot">
-    <img src="static/img/academic_manager.png" alt="AcademicManager" width="45%" height="auto">
-  </a>
+  <img src="static/img/academic_manager.png" alt="AcademicManager" width="45%" height="auto">
 </p>
 
 <p align="center">
-  <i>Ferramenta Python com foco na geração de trabalhos acadêmicos em PDF.
-</i>
+  <i>Transforme enunciados em trabalhos acadêmicos profissionais com o poder da IA.</i>
 </p>
 
 <p align="center">
 <a href="https://github.com/cleitonleonel/AcademicManager" target="_blank">
   <img src="https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-green" alt="Supported Python Versions"/>
 </a>
+<img src="https://img.shields.io/badge/docker-ready-blue" alt="Docker Ready"/>
+<img src="https://img.shields.io/badge/status-modernized-orange" alt="Status Modernized"/>
 </p>
 
 ---
 
-![academic_manager.gif](static/img/academic_manager.gif)
+O **AcademicManager** é uma ferramenta robusta para automação de trabalhos acadêmicos. Ele utiliza inteligência artificial (Gemini) para processar enunciados, gerar templates estruturados e exportar documentos PDF formatados seguindo padrões acadêmicos.
 
-## 🚀 Características
+## ✨ Novidades da Versão Modernizada
 
-- **Geração de PDFs**: Criação de documentos acadêmicos usando `fpdf2`.
-- **Integração HTTP**: Comunicação com APIs externas via `requests`.
-- **Arquitetura Modular**: Estrutura organizada em módulos (`core`, `services`, `ui`, `utils`) para escalabilidade.
-- **Gestão de Projetos Acadêmicos**: Organização de trabalhos, instruções e arquivos de fontes e anexos.
-- **Python Moderno**: Compatível com Python 3.10+.
+Recentemente o projeto passou por uma grande evolução, ganhando uma interface web de última geração e ferramentas de BI:
+
+- **Dashboard Administrativo**: Visualize seu progresso com gráficos de atividade em tempo real.
+- **Configurações Dinâmicas**: Altere chaves de API, fontes de PDF e preferências gerais diretamente na UI, com persistência por sessão (LocalStorage).
+- **Sistema de Backup & Restore**: Proteja seus projetos exportando e importando pacotes compactados (.zip) de forma integrada.
+- **Híbrido por Design**: Escolha entre o modo terminal (CLI) clássico ou a nova experiência Web.
 
 ---
 
-## 📦 Instalação
+## 🚀 Como Rodar
 
-### Pré-requisitos
+### 1. Usando Docker (Recomendado)
 
-- Python 3.10 ou superior
-- Poetry (para gerenciamento de dependências)
-
-### Instalação via pip
+A maneira mais rápida e limpa de subir o projeto em qualquer ambiente.
 
 ```bash
-# Clone o repositório
+# Clone e entre na pasta
 git clone https://github.com/cleitonleonel/AcademicManager.git
-cd academic_manager
+cd AcademicManager
 
-# Crie um ambiente virtual (opcional, mas recomendado)
-python -m venv venv_academic
-
-# Ative o ambiente virtual
-source venv_academic/bin/activate  # Linux/macOS
-venv_academic\Scripts\activate    # Windows
-
-# Atualize o pip
-python -m pip install --upgrade pip
-
-# Instale as dependências
-pip install -r requirements.txt
+# Suba o ambiente com um comando
+docker compose up -d
 ```
 
-### Instalação via Poetry
+O sistema estará disponível em:
+- 🌐 Interface de Usuário: [http://localhost:8000/](http://localhost:8000/)
+- 📚 Documentação da API: [http://localhost:8000/docs](http://localhost:8000/docs)
 
-Para instalar o Poetry, siga as instruções em https://python-poetry.org/docs/#installation.
+> [!TIP]
+> Os projetos criados serão salvos na pasta `academic_projects/` do seu computador, graças aos volumes do Docker.
 
-Depois, clone o repositório e instale as dependências:
+### 2. Instalação Local (Poetry)
 
 ```bash
-# Clone o repositório
-git clone https://github.com/cleitonleonel/AcademicManager.git
-cd academic_manager
-
 # Instale as dependências
 poetry install
-```
 
-### Obtendo a chave de api do google studio
- - Acesse o link https://aistudio.google.com e obtenha sua chave de api
- - Renomeie o arquivo `config-dev.ini` para `config.ini`
- - Adicione a chave de api no arquivo `config.ini` na chave `api_key`
- - Salve o arquivo
- - Reinicie o projeto
+# Modo Web
+poetry run python main.py --web
 
----
-
-## 🏃‍♂️ Uso
-
-Execute a aplicação usando o ponto de entrada principal:
-
-```bash
-python main.py
-```
-
-Ou através do Poetry:
-
-```bash
+# Modo Terminal (CLI)
 poetry run python main.py
 ```
 
 ---
 
+## 🛠️ Configuração da API Key
+
+Para utilizar as funcionalidades de IA (Gemini):
+1. Obtenha sua chave em [aistudio.google.com](https://aistudio.google.com).
+2. Você pode configurá-la de duas formas:
+   - **Fixa**: Renomeie `config-dev.ini` para `config.ini` e insira a chave.
+   - **Dinâmica**: Insira a chave diretamente na tela de *Configurações* do Dashboard (válido para a sessão atual).
+
+---
+
 ## 🏗️ Estrutura do Projeto
 
-```
-academic_manager/
-├── academic_manager/
-│   ├── builder.py             # Criação e montagem de projetos acadêmicos
-│   ├── constants.py           # Constantes globais do sistema
-│   ├── config/                # Configurações do projeto
-│   │   └── settings.py
-│   ├── core/                  # Núcleo da aplicação
-│   │   ├── file_manager.py
-│   │   ├── pdf_generator.py
-│   │   ├── project_manager.py
-│   │   └── template_generator.py
-│   ├── models/                # Modelos de dados
-│   │   └── project.py
-│   ├── services/              # Integrações externas e APIs
-│   │   ├── aistudio_chat.py
-│   │   └── bing_images.py
-│   ├── ui/                    # Interfaces e interações com o usuário
-│   │   └── interface.py
-│   └── utils/                 # Funções auxiliares
-│       └── helpers.py
-├── academic_projects/         # Projetos e trabalhos acadêmicos organizados
-├── tests/                     # Testes unitários e de performance
-├── main.py                    # Ponto de entrada
-├── pyproject.toml             # Configuração do Poetry
-└── README.md                  # Este arquivo
-```
+- `academic_manager/`: Motor central (Core, PDF, Services).
+- `api/`: Backend FastAPI, rotas e lógica assíncrona.
+- `frontend/`: Dashboard moderno (HTML/CSS/JS).
+- `academic_projects/`: Diretorio onde seus trabalhos são armazenados.
 
 ---
 
-## 🧪 Testes
+## 🧪 Qualidade e Testes
 
-Execute os testes usando pytest:
+O projeto utiliza o `pytest` para garantir a estabilidade das funcionalidades centrais e da API.
 
+### Como rodar os testes
+
+Você pode executar os testes de três formas diferentes:
+
+#### 1. Via Poetry (Desenvolvimento Local)
 ```bash
-# Executar todos os testes
+# Executa todos os testes e mostra a cobertura no terminal
 poetry run pytest
 
-# Executar com verbose
-poetry run pytest -v
-
-# Executar testes específicos
-poetry run pytest tests/academic_tests.py
+# Gera um relatório HTML detalhado de cobertura
+poetry run pytest --cov-report=html
 ```
 
-Cobertura de testes inclui:
-
-- Execução normal da aplicação
-- Tratamento de interrupção por teclado
-- Propagação adequada de exceções
-- Isolamento usando mocks
-
----
-
-## 🛠️ Desenvolvimento
-
-### Dependências
-
-Produção:
-
-- `fpdf2`: Geração de documentos PDF
-- `requests`: Cliente HTTP para APIs
-
-Desenvolvimento:
-
-- `pytest`: Framework de testes
-- `pytest-mock`: Mocking para testes
-
-### Comandos úteis
-
+#### 2. Via Docker (Consistência Total)
+Execute os testes dentro do container para garantir que o ambiente seja idêntico ao de produção:
 ```bash
-# Instalar dependências de desenvolvimento
-poetry install --with dev
-
-# Executar testes
-poetry run pytest
-
-# Adicionar nova dependência
-poetry add <package>
-
-# Adicionar dependência de desenvolvimento
-poetry add --group dev <package>
+docker compose run --rm academic-manager pytest
 ```
 
----
+#### 3. Via Pip (Manual)
+```bash
+python -m pytest
+```
 
-## 📋 Requisitos
-
-- Python >= 3.10
-- Bibliotecas: fpdf2, requests, pytest, pytest-mock
-- Sistema operacional: Linux, macOS, Windows
+### O que é testado?
+- **Core**: Validação da geração de PDF, lógica de templates e manipulação de arquivos.
+- **API**: Testes de integração de todos os endpoints HTTP usando `TestClient`.
+- **Stress**: Testes de performance para garantir estabilidade sob carga.
+- **Cobertura**: Relatórios automáticos que mostram exatamente quais partes do código foram testadas.
 
 ---
 
 ## 📄 Licença
 
-Este projeto está licenciado sob a Licença MIT. Veja o arquivo LICENSE para mais detalhes.
-
----
+Este projeto está licenciado sob a Licença MIT.
 
 ## 👨‍💻 Autor
 
@@ -207,18 +133,5 @@ Cleiton Leonel Creton - [@cleitonleonel](https://github.com/cleitonleonel)
 
 ---
 
-## 🤝 Contribuição
-
-Contribuições são bem-vindas! Por favor:
-
-1. Faça um fork do projeto  
-2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)  
-3. Commit suas mudanças (`git commit -am 'Adiciona nova feature'`)  
-4. Push para a branch (`git push origin feature/nova-feature`)  
-5. Abra um Pull Request
-
----
-
-## 📈 Status do Projeto
-
-Este projeto está em desenvolvimento ativo. Para relatórios de bugs ou solicitações de features, abra uma issue no GitHub.
+> [!IMPORTANT]
+> Este projeto é uma ferramenta de auxílio acadêmico. Lembre-se sempre de revisar o conteúdo gerado pela IA para garantir a precisão e a qualidade do seu trabalho.

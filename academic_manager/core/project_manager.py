@@ -101,7 +101,7 @@ class ProjectManager:
         :return: None
         """
         assignment_path.mkdir(parents=True, exist_ok=True)
-        assignment_file = assignment_path / f'{project_name}.txt'
+        assignment_file = assignment_path / f'{project_name}.md'
         with open(assignment_file, "w", encoding="utf-8") as f:
             f.write(content)
 

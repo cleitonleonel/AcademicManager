@@ -1,0 +1,179 @@
+{
+  "title": "Bot Informativo \"Aumigos de Livros\" no Telegram: Conectando Leitores e Protetores de Animais",
+  "sections": [
+    {
+      "name": "Cabeçalho",
+      "blocks": [
+        {
+          "type": "paragraph",
+          "text": "FUNDAÇÃO DE ASSISTÊNCIA E EDUCAÇÃO",
+          "align": "C",
+          "font": {
+            "style": "B",
+            "size": 12,
+            "family": "Arial"
+          }
+        },
+        {
+          "type": "paragraph",
+          "text": "CENTRO UNIVERSITÁRIO ESPÍRITO-SANTENSE",
+          "align": "C",
+          "font": {
+            "style": "B",
+            "size": 12,
+            "family": "Arial"
+          }
+        },
+        {
+          "type": "paragraph",
+          "text": "Disciplina: PROJETO INTEGRADOR Módulo 04",
+          "align": "C",
+          "font": {
+            "style": "B",
+            "size": 12,
+            "family": "Arial"
+          }
+        },
+        {
+          "type": "paragraph",
+          "text": "Componentes do grupo: Cleiton Leonel Creton, Beatryz Rodrigues Coelho, Ciclano Pereira",
+          "align": "L",
+          "font": {
+            "style": "B",
+            "size": 12,
+            "family": "Arial"
+          }
+        },
+        {
+          "type": "paragraph",
+          "text": "AÇÃO EXTENSIONISTA: Projeto Aumigo de Livros",
+          "align": "L",
+          "font": {
+            "style": "B",
+            "size": 12,
+            "family": "Arial"
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. TÍTULO DA AÇÃO",
+      "blocks": [
+        {
+          "type": "subtitle",
+          "text": "1. TÍTULO DA AÇÃO",
+          "align": "L",
+          "font": {
+            "style": "B",
+            "size": 12,
+            "family": "Arial"
+          }
+        },
+        {
+          "type": "paragraph",
+          "text": "Bot Informativo \"Aumigos de Livros\" no Telegram: Conectando Leitores e Protetores de Animais",
+          "align": "J",
+          "font": {
+            "style": "",
+            "size": 12,
+            "family": "Arial"
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. OBJETIVO DA AÇÃO",
+      "blocks": [
+        {
+          "type": "subtitle",
+          "text": "2. OBJETIVO DA AÇÃO",
+          "align": "L",
+          "font": {
+            "style": "B",
+            "size": 12,
+            "family": "Arial"
+          }
+        },
+        {
+          "type": "paragraph",
+          "text": "Desenvolver e integrar um bot no aplicativo Telegram com a finalidade de divulgar informações sobre o Instituto Aumigo de Livros, incentivando a doação de livros, a adoção responsável de animais, o voluntariado e o apoio financeiro à causa. O projeto visa ampliar a visibilidade da instituição e facilitar o acesso do público a dados relevantes por meio de uma interface automatizada, acessível e de fácil interação.",
+          "align": "J",
+          "font": {
+            "style": "",
+            "size": 12,
+            "family": "Arial"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. PÚBLICO-ALVO",
+      "blocks": [
+        {
+          "type": "subtitle",
+          "text": "3. PÚBLICO-ALVO",
+          "align": "L",
+          "font": {
+            "style": "B",
+            "size": 12,
+            "family": "Arial"
+          }
+        },
+        {
+          "type": "list",
+          "items": [
+            "Pessoas interessadas em causas sociais e ambientais;",
+            "Amantes de animais e apoiadores da causa animal;",
+            "Leitores e doadores de livros usados;",
+            "Filantropos de todo o Espírito Santo."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. DESCRIÇÃO DA AÇÃO",
+      "blocks": [
+        {
+          "type": "subtitle",
+          "text": "4. DESCRIÇÃO DA AÇÃO",
+          "align": "L",
+          "font": {
+            "style": "B",
+            "size": 12,
+            "family": "Arial"
+          }
+        },
+        {
+          "type": "paragraph",
+          "text": "O projeto consiste na criação de um bot interativo voltado à disseminação de informações sobre o Instituto Aumigo de Livros, uma organização sem fins lucrativos que transforma doações de livros em recursos para o cuidado e resgate de animais abandonados.",
+          "align": "J",
+          "font": {
+            "style": "",
+            "size": 12,
+            "family": "Arial"
+          }
+        },
+        {
+          "type": "paragraph",
+          "text": "O bot atua como um canal de comunicação automatizado, oferecendo respostas sobre a história do instituto, seus objetivos, formas de doação, eventos e resultados alcançados.",
+          "align": "J",
+          "font": {
+            "style": "",
+            "size": 12,
+            "family": "Arial"
+          }
+        },
+        {
+          "type": "paragraph",
+          "text": "Com base em linguagem natural, o sistema busca facilitar o acesso às informações e ampliar a visibilidade da causa, integrando tecnologia, educação e responsabilidade social em um mesmo ambiente digital.",
+          "align": "J",
+          "font": {
+            "style": "",
+            "size": 12,
+            "family": "Arial"
+          }
+        }
+      ]
+    }
+  ]
+}

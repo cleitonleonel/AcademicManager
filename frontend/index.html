@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academic Manager</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/frontend/css/main.css">
+</head>
+<body data-theme="dark">
+<div class="container">
+  <div class="sidebar">
+    <div class="logo">
+      <h1><i class="fas fa-graduation-cap"></i> Academic Manager</h1>
+      <p>Ferramenta para trabalhos acadêmicos</p>
+    </div>
+    <nav>
+      <div class="nav-item active" data-section="dashboard">
+        <i class="fas fa-chart-pie"></i>
+        <span>Dashboard</span>
+      </div>
+      <div class="nav-item" data-section="projects">
+        <i class="fas fa-folder"></i>
+        <span>Projetos</span>
+      </div>
+      <div class="nav-item" data-section="new-project">
+        <i class="fas fa-plus-circle"></i>
+        <span>Novo Projeto</span>
+      </div>
+      <div class="nav-item" data-section="templates">
+        <i class="fas fa-file-alt"></i>
+        <span>Templates</span>
+      </div>
+
+      <div class="nav-item" data-section="config">
+        <i class="fas fa-cog"></i>
+        <span>Configurações</span>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="nav-item" id="themeToggleBtn">
+        <i class="fas fa-moon"></i>
+        <span>Modo Escuro</span>
+      </div>
+    </div>
+  </div>
+  <div class="main-content">
+    <!-- Dashboard Section -->
+    <div id="dashboard" class="content-section active">
+      <div class="header header-flat">
+        <h2>Bem-vindo, Acadêmico!</h2>
+        <p id="dashboard-date" style="color:var(--text-secondary);"></p>
+      </div>
+      <div id="stats-grid" class="project-grid" style="margin-bottom: 3rem;">
+        <!-- Stats cards serão inseridos aqui dinamicamente -->
+      </div>
+      
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1.4rem;">Atualizações Recentes dos Projetos</h3>
+      </div>
+      <div id="recent-activity" class="project-grid">
+        <!-- Atividades serão inseridas aqui dinamicamente como cards verticais -->
+      </div>
+    </div>
+
+    <!-- Projects Section -->
+    <div id="projects" class="content-section">
+      <div class="header">
+        <h2><i class="fas fa-folder"></i> Meus Projetos</h2>
+        <p>Gerencie seus trabalhos acadêmicos</p>
+      </div>
+      <div id="projects-grid" class="project-grid">
+        <!-- Projetos serão inseridos aqui dinamicamente -->
+      </div>
+    </div>
+
+    <!-- New Project Section -->
+    <div id="new-project" class="content-section">
+      <div class="header">
+        <h2><i class="fas fa-plus-circle"></i> Novo Projeto</h2>
+        <p>Crie ou edite um trabalho acadêmico</p>
+      </div>
+      <div class="card">
+        <form id="newProjectForm">
+          <!-- Hidden field for edit mode -->
+          <input type="hidden" id="projectId">
+
+          <!-- Row 1: Title -->
+          <div class="form-group">
+            <label for="projectTitle">Título do Projeto *</label>
+            <input type="text" id="projectTitle" placeholder="Digite o título do seu trabalho" required>
+          </div>
+
+          <!-- Row 2: Subtitle -->
+          <div class="form-group">
+            <label for="projectSubtitle">Subtítulo</label>
+            <input type="text" id="projectSubtitle" placeholder="Subtítulo (opcional)">
+          </div>
+
+          <!-- Row 3: Author + Advisor -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+            <div class="form-group">
+              <label for="projectAuthor">Aluno(s) *</label>
+              <input type="text" id="projectAuthor" placeholder="Nome do(s) aluno(s)" required>
+            </div>
+            <div class="form-group">
+              <label for="projectAdvisor">Orientador *</label>
+              <input type="text" id="projectAdvisor" placeholder="Nome do orientador" required>
+            </div>
+          </div>
+
+          <!-- Row 4: Type + Discipline -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+            <div class="form-group">
+              <label for="projectType">Tipo de Trabalho *</label>
+              <select id="projectType" required>
+                <option value="GRADUAÇÃO">Graduação</option>
+                <option value="PÓS-GRADUAÇÃO">Pós-Graduação</option>
+                <option value="MESTRADO">Mestrado</option>
+                <option value="DOUTORADO">Doutorado</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="projectDiscipline">Disciplina *</label>
+              <input type="text" id="projectDiscipline" placeholder="Nome da disciplina" required>
+            </div>
+          </div>
+
+          <!-- Row 5: Course + Unit -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+            <div class="form-group">
+              <label for="projectCourse">Curso *</label>
+              <input type="text" id="projectCourse" placeholder="Nome do curso" required>
+            </div>
+            <div class="form-group">
+              <label for="projectUnit">Unidade de Ensino</label>
+              <input type="text" id="projectUnit" placeholder="Unidade (ex: Centro Universitário…)">
+            </div>
+          </div>
+
+          <!-- Row 6: Institution + City + Year -->
+          <div style="display:grid; grid-template-columns:2fr 1fr 1fr; gap:1rem;">
+            <div class="form-group">
+              <label for="projectInstitution">Instituição</label>
+              <input type="text" id="projectInstitution" placeholder="Nome da instituição">
+            </div>
+            <div class="form-group">
+              <label for="projectCity">Cidade</label>
+              <input type="text" id="projectCity" placeholder="Vitória">
+            </div>
+            <div class="form-group">
+              <label for="projectYear">Ano</label>
+              <input type="number" id="projectYear" placeholder="2025" min="2000" max="2100">
+            </div>
+          </div>
+
+          <!-- Row 7: Assignment (enunciado) -->
+          <div class="form-group">
+            <label for="projectAssignment">
+              Enunciado / Tarefa
+              <small style="font-weight:normal; color:#888;"> — usado na geração via IA</small>
+            </label>
+            <textarea id="projectAssignment" rows="5"
+              placeholder="Cole aqui o enunciado do trabalho (opcional). Se preenchido, será salvo como assignment do projeto."></textarea>
+          </div>
+
+          <!-- Actions -->
+          <div style="display:flex; gap:1rem; margin-top:2rem; flex-wrap:wrap;">
+            <button type="submit" class="btn" id="submitProjectBtn">
+              <i class="fas fa-save"></i> Criar Projeto
+            </button>
+            <button type="button" class="btn btn-secondary" onclick="this.closest('form').reset();">
+              <i class="fas fa-times"></i> Limpar
+            </button>
+            <button type="button" class="btn btn-danger" id="deleteProjectBtn" style="display:none; margin-left:auto;">
+              <i class="fas fa-trash"></i> Excluir Projeto
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Templates Section -->
+    <div id="templates" class="content-section">
+      <div class="header">
+        <h2><i class="fas fa-file-alt"></i> Templates</h2>
+        <p>Gerencie modelos de documentos</p>
+      </div>
+      <div id="templates-grid"
+           style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+        <!-- Templates serão inseridos aqui dinamicamente -->
+      </div>
+    </div>
+
+
+
+    <!-- Configuration Section -->
+    <div id="config" class="content-section">
+      <div class="header">
+        <h2><i class="fas fa-cog"></i> Configurações</h2>
+        <p>Configure as preferências do sistema</p>
+      </div>
+      <div class="config-grid">
+        <div class="card">
+          <h3><i class="fas fa-key"></i> API Configuration</h3>
+          <div class="form-group">
+            <label>URL da API</label>
+            <input type="text" id="apiUrl" placeholder="http://localhost:8000/api" value="http://localhost:8000/api">
+          </div>
+          <div class="form-group">
+            <label>API Key</label>
+            <input type="password" id="apiKey" placeholder="Digite sua chave de API">
+          </div>
+          <div class="form-group">
+            <label>Timeout (ms)</label>
+            <input type="number" id="apiTimeout" placeholder="5000" value="5000">
+          </div>
+          <button class="btn" onclick="testApiConnection()">
+            <i class="fas fa-link"></i> Testar Conexão
+          </button>
+          <button class="btn btn-success" onclick="saveApiConfig()" style="margin-left: 0.5rem;">
+            <i class="fas fa-save"></i> Salvar
+          </button>
+        </div>
+        <div class="card">
+          <h3><i class="fas fa-palette"></i> Preferências Gerais</h3>
+          <div class="form-group">
+            <label>Idioma Padrão</label>
+            <select id="defaultLanguage">
+              <option value="pt-BR">Português (Brasil)</option>
+              <option value="en-US">English (US)</option>
+              <option value="es-ES">Español</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Formato de Data</label>
+            <select id="dateFormat">
+              <option value="dd/mm/yyyy">DD/MM/AAAA</option>
+              <option value="mm/dd/yyyy">MM/DD/YYYY</option>
+              <option value="yyyy-mm-dd">YYYY-MM-DD</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Diretório de Projetos</label>
+            <input type="text" id="projectsDirectory" value="./academic_projects/" placeholder="Caminho para projetos">
+          </div>
+          <div class="form-group">
+            <label>Auto-salvar (minutos)</label>
+            <input type="number" id="autoSaveInterval" value="5" min="1" max="60">
+          </div>
+          <button class="btn" onclick="saveGeneralConfig()">
+            <i class="fas fa-save"></i> Salvar Preferências
+          </button>
+        </div>
+        <div class="card">
+            <h3><i class="fas fa-file-pdf"></i> Configurações de PDF</h3>
+            <div class="form-group">
+                <label>Qualidade de Imagem</label>
+                <select id="imageQuality">
+                    <option value="high">Alta</option>
+                    <option value="medium">Média</option>
+                    <option value="low">Baixa</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Compressão PDF</label>
+                <select id="pdfCompression">
+                    <option value="none">Sem Compressão</option>
+                    <option value="low">Baixa</option>
+                    <option value="medium">Média</option>
+                    <option value="high">Alta</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Fonte Padrão</label>
+                <select id="defaultFont">
+                    <option value="Arial">Arial</option>
+                    <option value="Times">Times New Roman</option>
+                    <option value="Helvetica">Helvetica</option>
+                    <option value="Calibri">Calibri</option>
+                </select>
+            </div>
+            <button class="btn" onclick="savePdfConfig()">
+                <i class="fas fa-save"></i> Salvar PDF
+            </button>
+        </div>
+        <div class="card">
+            <h3><i class="fas fa-shield-alt"></i> Backup e Segurança</h3>
+            <div class="form-group">
+                <label>Backup Automático</label>
+                <select id="autoBackup">
+                    <option value="daily">Diário</option>
+                    <option value="weekly">Semanal</option>
+                    <option value="monthly">Mensal</option>
+                    <option value="never">Nunca</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Diretório de Backup</label>
+                <input type="text" id="backupDirectory" value="./backups/" placeholder="Caminho para backups">
+            </div>
+            <div style="margin-top: 1.5rem;">
+                <button class="btn btn-success" id="doBackupBtn" style="margin-right: 0.5rem;">
+                    <i class="fas fa-download"></i> Backup
+                </button>
+                <button class="btn btn-secondary" id="doRestoreBtn">
+                    <i class="fas fa-upload"></i> Restaurar
+                </button>
+                <input type="file" id="restoreFileInput" style="display:none;" accept=".zip">
+            </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top: 2rem;">
+        <h3><i class="fas fa-info-circle"></i> Informações do Sistema</h3>
+        <div id="system-info"
+             style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+          <!-- Informações do sistema serão inseridas aqui dinamicamente -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Modal -->
+<div id="loadingModal" class="loading">
+  <div class="spinner"></div>
+  <p id="loadingText">Processando...</p>
+</div>
+
+<!-- Notification -->
+<div id="notification" class="notification"></div>
+
+<!--<script src="/frontend/js/App.js" defer></script>-->
+<script type="module" src="/frontend/js/main.js" defer></script>
+</body>
+</html>

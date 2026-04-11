@@ -21,7 +21,8 @@ class TemplateGenerator:
             assignment_content: str,
             media_data: Dict,
             output_path: Path,
-            project_name: str
+            project_name: str,
+            api_key_override: str = None
     ) -> Optional[Dict]:
         """
         Generates an AI template by formatting a provided template with given media data
@@ -46,7 +47,12 @@ class TemplateGenerator:
         try:
             print("Gerando template via IA...")
             ignore_image = not media_data and not Config.ENABLE_DOWNLOADS
-            template_response = get_template_json(assignment_content, ignore_image, project_name)
+            template_response = get_template_json(
+                assignment_content,
+                ignore_image,
+                project_name,
+                api_key_override
+            )
             if Config.ENABLE_DOWNLOADS:
                 json_data = json.loads(template_response)
                 media_data = process_json(json_data, project_name)
@@ -85,7 +91,10 @@ class TemplateGenerator:
             None if no assignment is selected or the file could not be read.
         """
         assignments = FileManager.list_assignments()
-        selected = UserInterface.select_from_list(assignments, "Enunciados disponíveis")
+        selected = UserInterface.select_from_list(
+            assignments,
+            "Enunciados disponíveis"
+        )
 
         if not selected:
             return None
