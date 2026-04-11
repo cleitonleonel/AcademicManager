@@ -68,6 +68,16 @@ def list_projects() -> List[Dict[str, Any]]:
         project_path = Config.BASE_DIR / folder
         status = _determine_status(project_path, settings.get("disciplina", ""))
 
+        # Calculate actual last activity from filesystem
+        try:
+            mtimes = [f.stat().st_mtime for f in project_path.rglob("*") if f.is_file()]
+            if mtimes:
+                last_activity = datetime.fromtimestamp(max(mtimes)).isoformat()
+            else:
+                last_activity = settings.get("updated_date") or settings.get("created_date") or ""
+        except Exception:
+            last_activity = settings.get("updated_date") or settings.get("created_date") or ""
+
         results.append(
             {
                 "id": folder,
@@ -80,6 +90,7 @@ def list_projects() -> List[Dict[str, Any]]:
                 "type": settings.get("tipo", "").lower(),
                 "created_date": settings.get("created_date", ""),
                 "updated_date": settings.get("updated_date", ""),
+                "last_activity": last_activity,
                 "edit_count": settings.get("edit_count", 0),
                 "folder": folder,
             }

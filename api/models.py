@@ -48,6 +48,7 @@ class ProjectResponse(BaseModel):
     type: str
     created_date: Optional[str] = None
     updated_date: Optional[str] = None
+    last_activity: Optional[str] = None
     edit_count: int = 0
     folder: str
 

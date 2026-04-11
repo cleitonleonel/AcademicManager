@@ -9,10 +9,12 @@ export function renderRecentActivity() {
 
   const projects = [...(appData.projects || [])];
   
-  // Sort projects by created_date (if missing, consider it very old)
+  // Sort projects by last_activity (fallback to updated_date then created_date)
   projects.sort((a, b) => {
-    const da = a.created_date ? new Date(a.created_date).getTime() : 0;
-    const db = b.created_date ? new Date(b.created_date).getTime() : 0;
+    const ta = a.last_activity || a.updated_date || a.created_date || 0;
+    const tb = b.last_activity || b.updated_date || b.created_date || 0;
+    const da = ta ? new Date(ta).getTime() : 0;
+    const db = tb ? new Date(tb).getTime() : 0;
     return db - da;
   });
 
@@ -24,8 +26,9 @@ export function renderRecentActivity() {
   }
 
   container.innerHTML = recent.map(p => {
-    let timeStr = p.created_date 
-      ? new Date(p.created_date).toLocaleString() 
+    const activityDate = p.last_activity || p.updated_date || p.created_date;
+    let timeStr = activityDate 
+      ? new Date(activityDate).toLocaleDateString() 
       : 'Projeto Antigo';
       
     // Tratar informações caso estejam vazias
@@ -68,7 +71,7 @@ export function renderRecentActivity() {
              <span style="font-size:0.8rem; font-weight:600; color:var(--text-primary); margin-left:4px;">${author}</span>
           </div>
           <div style="font-size: 0.75rem; color: var(--text-secondary);">
-            <i class="fas fa-calendar-alt"></i> ${timeStr.split(" ")[0]}
+            <i class="fas fa-calendar-alt"></i> ${timeStr}
           </div>
         </div>
       </div>
