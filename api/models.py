@@ -89,7 +89,9 @@ class PDFResponse(BaseModel):
 class StatsResponse(BaseModel):
     active_projects: int
     generated_pdfs: int
+    completed_projects: int
     in_progress: int
+    draft_projects: int
     total_files: int
 
 

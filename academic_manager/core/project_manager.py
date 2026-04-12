@@ -105,6 +105,13 @@ class ProjectManager:
         with open(assignment_file, "w", encoding="utf-8") as f:
             f.write(content)
 
+        # Also save as prompt.txt in the project directory to mark as 'In Progress'
+        project_dir = Config.BASE_DIR / project_name
+        if project_dir.exists():
+            prompt_file = project_dir / "prompt.txt"
+            with open(prompt_file, "w", encoding="utf-8") as f:
+                f.write(content)
+
     def _collect_metadata(self, existing_metadata: Optional[Dict] = None) -> Dict:
         """
         Collects and updates metadata for a project interactively.

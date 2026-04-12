@@ -28,17 +28,31 @@ def _load_settings(project_id: str) -> Optional[Dict[str, Any]]:
 
 
 def _determine_status(project_path: Path, disciplina: str) -> str:
-    """Derive a simple lifecycle status from the files present in a project dir."""
+    """
+    Derive a simple lifecycle status from the files present in a project dir.
+    
+    - draft: settings.json only.
+    - progress: prompt.txt exists.
+    - completed: Pair of X.json and X.pdf exists.
+    """
     if not project_path.exists():
         return "draft"
 
     files = list(project_path.iterdir())
-    titulo_json_exists = any(f.suffix == ".json" and f.stem != "settings" for f in files)
-    pdf_exists = any(f.suffix == ".pdf" for f in files)
+    file_names = {f.name for f in files}
+    
+    # Check for prompt.txt
+    prompt_exists = "prompt.txt" in file_names
+    
+    # Check for completed (JSON + PDF pair with same name)
+    json_stems = {f.stem for f in files if f.suffix == ".json" and f.stem != "settings"}
+    pdf_stems = {f.stem for f in files if f.suffix == ".pdf"}
+    
+    is_completed = any(stem in pdf_stems for stem in json_stems)
 
-    if pdf_exists:
+    if is_completed:
         return "completed"
-    if titulo_json_exists:
+    if prompt_exists:
         return "progress"
     return "draft"
 
@@ -104,7 +118,11 @@ def get_stats() -> Dict[str, int]:
     FileManager.ensure_directories_exist()
     projects = list_projects()
     active = len(projects)
+    
     in_progress = sum(1 for p in projects if p["status"] == "progress")
+    completed   = sum(1 for p in projects if p["status"] == "completed")
+    drafts      = sum(1 for p in projects if p["status"] == "draft")
+    
     pdfs = sum(_count_project_pdfs(p["id"]) for p in projects)
     total_files = sum(
         len(FileManager.list_attachments(p["id"])) for p in projects
@@ -112,7 +130,9 @@ def get_stats() -> Dict[str, int]:
     return {
         "active_projects": active,
         "generated_pdfs": pdfs,
+        "completed_projects": completed,
         "in_progress": in_progress,
+        "draft_projects": drafts,
         "total_files": total_files,
     }
 

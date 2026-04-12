@@ -6,13 +6,24 @@ import {appData} from "../data.js";
 
 export function renderStats() {
 	const statsGrid = document.getElementById("stats-grid");
-	const stats = appData.stats || { activeProjects: 0, generatedPDFs: 0, inProgress: 0, uploadedFiles: 0 };
+	const stats = appData.stats || { 
+    activeProjects: 0, 
+    generatedPDFs: 0, 
+    completedProjects: 0, 
+    inProgress: 0, 
+    draftProjects: 0, 
+    uploadedFiles: 0 
+  };
 	const projects = appData.projects || [];
   
   // Transformando os gráficos em dados REAIS e dinâmicos de Proporção:
   const total = stats.activeProjects > 0 ? stats.activeProjects : 1;
-  const pCom = Math.round((stats.generatedPDFs / total) * 100);
+  
+  // Usar contagem de PROJETOS para as porcentagens (mais preciso que contagem de arquivos)
+  const pCom = Math.round((stats.completedProjects / total) * 100);
   const pPro = Math.round((stats.inProgress / total) * 100);
+  const pDra = Math.max(0, 100 - pCom - pPro);
+  
   const progPct = `${pPro}%`;
 
   const pTotal1 = pCom;
@@ -99,6 +110,22 @@ export function renderStats() {
     <div class="card stat-card-modern" style="padding: 1.5rem; display:flex; flex-direction:column; justify-content:space-between;">
       <div>
         <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h3 style="margin-bottom:0; font-size:1rem; color:var(--text-secondary);">Rascunhos</h3>
+          <div style="padding: 6px; border-radius: 8px; background: rgba(37, 99, 235, 0.15); color: var(--info-color);"><i class="fas fa-pencil-alt"></i></div>
+        </div>
+        <h3 class="stat-value" style="font-size: 2.2rem; margin: 0.5rem 0;">${stats.draftProjects}</h3>
+        <p class="stat-label" style="color: var(--info-color); font-size: 0.8rem; text-transform:none;">${pDra}% do Total</p>
+      </div>
+      <div style="margin-top: 1rem;">
+        <div style="width: 100%; height: 8px; background: rgba(0,0,0,0.1); border-radius: 6px; overflow: hidden;">
+          <div style="width: ${pDra}%; height: 100%; background: linear-gradient(90deg, var(--info-color), #60a5fa); border-radius: 6px; transition: width 1s ease;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card stat-card-modern" style="padding: 1.5rem; display:flex; flex-direction:column; justify-content:space-between;">
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
           <h3 style="margin-bottom:0; font-size:1rem; color:var(--text-secondary);">PDFs Gerados</h3>
           <div style="padding: 6px; border-radius: 8px; background: rgba(16, 185, 129, 0.15); color: var(--success-color);"><i class="fas fa-file-pdf"></i></div>
         </div>
@@ -117,19 +144,34 @@ export function renderStats() {
     <div class="card stat-card-modern" style="padding: 1.5rem; display:flex; flex-direction:column; justify-content:space-between;">
       <div>
         <div style="display:flex; justify-content:space-between; align-items:center;">
-          <h3 style="margin-bottom:0; font-size:1rem; color:var(--text-secondary);">Gráfico Geral</h3>
+          <h3 style="margin-bottom:0; font-size:1rem; color:var(--text-secondary);">Status dos Projetos</h3>
           <div style="padding: 6px; border-radius: 8px; background: rgba(37, 99, 235, 0.15); color: var(--info-color);"><i class="fas fa-chart-pie"></i></div>
         </div>
-        <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 0.5rem;">
           <div>
-            <h3 class="stat-value" style="font-size: 2.2rem; margin: 0.5rem 0;">${stats.activeProjects}</h3>
-            <p class="stat-label" style="color: var(--text-secondary); font-size: 0.8rem; text-transform:none;">Proporção Geral</p>
+            <h3 class="stat-value" style="font-size: 2.2rem; margin: 0;">${stats.uploadedFiles}</h3>
+            <p class="stat-label" style="color: var(--text-secondary); font-size: 0.8rem; text-transform:none;">Total de Arquivos</p>
           </div>
           <!-- Real CSS Donut Chart Matemático -->
-          <div style="margin-bottom: 0.5rem;">
-            <div style="width: 48px; height: 48px; border-radius: 50%; background: ${donutGradient}; display:flex; align-items:center; justify-content:center; box-shadow: 0 0 8px rgba(0,0,0,0.1);">
-              <div style="width: 26px; height: 26px; border-radius:50%; background: var(--surface-bg);"></div>
+          <div style="margin-bottom: 0.2rem;">
+            <div style="width: 52px; height: 52px; border-radius: 50%; background: ${donutGradient}; display:flex; align-items:center; justify-content:center; box-shadow: 0 0 8px rgba(0,0,0,0.1);">
+              <div style="width: 28px; height: 28px; border-radius:50%; background: var(--surface-bg);"></div>
             </div>
+          </div>
+        </div>
+        <!-- Legenda do Gráfico -->
+        <div style="margin-top: 1.2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.75rem; color: var(--text-secondary);">
+          <div style="display:flex; align-items:center; gap: 5px;">
+            <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--success-color);"></span>
+            <span>Concluídos: ${pCom}%</span>
+          </div>
+          <div style="display:flex; align-items:center; gap: 5px;">
+            <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--warning-color);"></span>
+            <span>Em Progresso: ${pPro}%</span>
+          </div>
+          <div style="display:flex; align-items:center; gap: 5px;">
+            <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--info-color);"></span>
+            <span>Rascunhos: ${pDra}%</span>
           </div>
         </div>
       </div>

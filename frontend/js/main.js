@@ -109,10 +109,12 @@ async function loadRealData() {
     // Stats
     const stats = await apiRequest('/stats');
     if (stats) {
-      appData.stats.activeProjects = stats.active_projects ?? appData.stats.activeProjects;
-      appData.stats.generatedPDFs  = stats.generated_pdfs  ?? appData.stats.generatedPDFs;
-      appData.stats.inProgress     = stats.in_progress      ?? appData.stats.inProgress;
-      appData.stats.uploadedFiles  = stats.total_files      ?? appData.stats.uploadedFiles;
+      appData.stats.activeProjects    = stats.active_projects     ?? appData.stats.activeProjects;
+      appData.stats.generatedPDFs     = stats.generated_pdfs      ?? appData.stats.generatedPDFs;
+      appData.stats.completedProjects = stats.completed_projects  ?? appData.stats.completedProjects;
+      appData.stats.inProgress        = stats.in_progress         ?? appData.stats.inProgress;
+      appData.stats.draftProjects     = stats.draft_projects      ?? appData.stats.draftProjects;
+      appData.stats.uploadedFiles     = stats.total_files         ?? appData.stats.uploadedFiles;
     }
   } catch (_) {}
 
