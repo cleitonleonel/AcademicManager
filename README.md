@@ -18,6 +18,8 @@
 
 ---
 
+https://github.com/user-attachments/assets/74552b2f-a0b9-49fb-b8e7-628796b093cf
+
 O **AcademicManager** é uma ferramenta para automação de trabalhos acadêmicos. Ele utiliza inteligência artificial (Gemini) para processar enunciados, gerar templates estruturados e exportar documentos PDF e PPTX formatados.
 
 ## ✨ Novidades da Versão Modernizada
