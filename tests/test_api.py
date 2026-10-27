@@ -144,6 +144,26 @@ class TestProjectsCRUD:
         assert len(projects) >= 1
         assert projects[0]["title"] == SAMPLE_PROJECT["titulo"]
 
+    def test_assignment_controls_progress_status(self, client: TestClient):
+        project_without_assignment = {
+            key: value for key, value in SAMPLE_PROJECT.items() if key != "assignment"
+        }
+        res = client.post("/api/projects", json=project_without_assignment)
+        assert res.status_code == 201, res.text
+        folder = res.json()["project_folder"]
+        res = client.get("/api/projects")
+        assert res.status_code == 200
+        assert res.json()["projects"][0]["status"] == "draft"
+
+        from academic_manager.config.settings import Config
+        (Config.ASSIGNMENTS_DIR / f"{folder}.md").write_text(
+            "Enunciado do trabalho", encoding="utf-8"
+        )
+
+        res = client.get("/api/projects")
+        assert res.status_code == 200
+        assert res.json()["projects"][0]["status"] == "progress"
+
     def test_get_project(self, client: TestClient):
         folder = _create_project(client)
         res = client.get(f"/api/projects/{folder}")

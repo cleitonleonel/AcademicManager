@@ -18,14 +18,14 @@
 
 ---
 
-O **AcademicManager** é uma ferramenta robusta para automação de trabalhos acadêmicos. Ele utiliza inteligência artificial (Gemini) para processar enunciados, gerar templates estruturados e exportar documentos PDF formatados seguindo padrões acadêmicos.
+O **AcademicManager** é uma ferramenta para automação de trabalhos acadêmicos. Ele utiliza inteligência artificial (Gemini) para processar enunciados, gerar templates estruturados e exportar documentos PDF e PPTX formatados.
 
 ## ✨ Novidades da Versão Modernizada
 
-Recentemente o projeto passou por uma grande evolução, ganhando uma interface web de última geração e ferramentas de BI:
+O projeto possui uma interface web baseada em FastAPI e um modo de terminal:
 
 - **Dashboard Administrativo**: Visualize seu progresso com gráficos de atividade em tempo real.
-- **Configurações Dinâmicas**: Altere chaves de API, fontes de PDF e preferências gerais diretamente na UI, com persistência por sessão (LocalStorage).
+- **Configurações Dinâmicas**: Informe a chave de API e preferências pela interface web, com persistência por sessão (LocalStorage).
 - **Sistema de Backup & Restore**: Proteja seus projetos exportando e importando pacotes compactados (.zip) de forma integrada.
 - **Híbrido por Design**: Escolha entre o modo terminal (CLI) clássico ou a nova experiência Web.
 
@@ -42,6 +42,10 @@ A maneira mais rápida e limpa de subir o projeto em qualquer ambiente.
 git clone https://github.com/cleitonleonel/AcademicManager.git
 cd AcademicManager
 
+# Crie a configuração local (não versionada)
+cp config-dev.ini config.ini
+# Edite config.ini e informe sua chave da API
+
 # Suba o ambiente com um comando
 docker compose up -d
 ```
@@ -51,11 +55,23 @@ O sistema estará disponível em:
 - 📚 Documentação da API: [http://localhost:8000/docs](http://localhost:8000/docs)
 
 > [!TIP]
-> Os projetos criados serão salvos na pasta `academic_projects/` do seu computador, graças aos volumes do Docker.
+> Os projetos criados serão salvos na pasta `academic_projects/` do seu computador, graças ao volume do Docker. Essa pasta contém dados gerados/localmente armazenados e não deve ser enviada ao Git.
+
+Para encerrar o ambiente:
+
+```bash
+docker compose down
+```
 
 ### 2. Instalação Local (Poetry)
 
+Requisitos: Python 3.10 ou superior, Poetry e, para a exportação de PDF, as fontes Liberation Sans instaladas no sistema.
+
 ```bash
+# Crie a configuração local (não versionada)
+cp config-dev.ini config.ini
+# Edite config.ini e informe sua chave da API
+
 # Instale as dependências
 poetry install
 
@@ -72,9 +88,10 @@ poetry run python main.py
 
 Para utilizar as funcionalidades de IA (Gemini):
 1. Obtenha sua chave em [aistudio.google.com](https://aistudio.google.com).
-2. Você pode configurá-la de duas formas:
-   - **Fixa**: Renomeie `config-dev.ini` para `config.ini` e insira a chave.
-   - **Dinâmica**: Insira a chave diretamente na tela de *Configurações* do Dashboard (válido para a sessão atual).
+2. Copie `config-dev.ini` para `config.ini` e insira a chave em `api_key`.
+3. Como alternativa, informe a chave diretamente na tela de *Configurações* do Dashboard; nesse caso, ela vale apenas para a sessão atual.
+
+`config.ini` é ignorado pelo Git para evitar o envio de credenciais. Nunca publique uma chave de API no repositório; se ela for exposta, revogue-a e gere outra.
 
 ---
 
@@ -83,7 +100,9 @@ Para utilizar as funcionalidades de IA (Gemini):
 - `academic_manager/`: Motor central (Core, PDF, Services).
 - `api/`: Backend FastAPI, rotas e lógica assíncrona.
 - `frontend/`: Dashboard moderno (HTML/CSS/JS).
-- `academic_projects/`: Diretorio onde seus trabalhos são armazenados.
+- `academic_projects/`: Diretório onde seus trabalhos são armazenados localmente (ignorado pelo Git).
+- `config-dev.ini`: Modelo de configuração sem credenciais.
+- `config.ini`: Configuração local com credenciais (não versionada).
 
 ---
 
@@ -117,7 +136,8 @@ python -m pytest
 
 ### O que é testado?
 - **Core**: Validação da geração de PDF, lógica de templates e manipulação de arquivos.
-- **API**: Testes de integração de todos os endpoints HTTP usando `TestClient`.
+- **API**: Testes de integração dos endpoints HTTP usando `TestClient`.
+- **Exportação**: Geração de arquivos PDF e PPTX.
 - **Stress**: Testes de performance para garantir estabilidade sob carga.
 - **Cobertura**: Relatórios automáticos que mostram exatamente quais partes do código foram testadas.
 

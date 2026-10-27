@@ -32,27 +32,28 @@ def _determine_status(project_path: Path, disciplina: str) -> str:
     Derive a simple lifecycle status from the files present in a project dir.
     
     - draft: settings.json only.
-    - progress: prompt.txt exists.
+    - progress: an assignment exists for the project.
     - completed: Pair of X.json and X.pdf exists.
     """
     if not project_path.exists():
         return "draft"
 
     files = list(project_path.iterdir())
-    file_names = {f.name for f in files}
-    
-    # Check for prompt.txt
-    prompt_exists = "prompt.txt" in file_names
     
     # Check for completed (JSON + PDF pair with same name)
     json_stems = {f.stem for f in files if f.suffix == ".json" and f.stem != "settings"}
     pdf_stems = {f.stem for f in files if f.suffix == ".pdf"}
     
     is_completed = any(stem in pdf_stems for stem in json_stems)
+    assignment_exists = any(
+        assignment.is_file()
+        and assignment.stem == project_path.name
+        for assignment in Config.ASSIGNMENTS_DIR.glob("*")
+    )
 
     if is_completed:
         return "completed"
-    if prompt_exists:
+    if assignment_exists:
         return "progress"
     return "draft"
 

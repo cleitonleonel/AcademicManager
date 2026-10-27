@@ -18,10 +18,17 @@ class Config:
     ASSIGNMENTS_DIR = BASE_DIR / "assignments"
     API_KEY = config["DEFAULT"]["api_key"]
     MODEL = config["DEFAULT"]["model"]
+    FALLBACK_MODEL = config["DEFAULT"]["fallback_model"]
     ENABLE_DOWNLOADS = config["DEFAULT"].getboolean("enable_downloads")
     IGNORE_MASKS = config["DEFAULT"].getboolean("ignore_masks")
     IGNORE_LOGO = config["DEFAULT"].getboolean("ignore_logo")
     IGNORE_IMGS = config["DEFAULT"].getboolean("ignore_images")
+    PDF_FONT = config["DEFAULT"].get("pdf_font", "LiberationSans")
+    PDF_FONT_DIR = Path(config["DEFAULT"].get(
+        "pdf_font_dir",
+        "/usr/share/fonts/truetype/liberation2"
+    ))
+    PDF_FONT_SIZE = config["DEFAULT"].getint("pdf_font_size", 12)
 
     DEFAULT_METADATA = {
         "instituicao": "FUNDAÇÃO DE ASSISTÊNCIA E EDUCAÇÃO",
@@ -45,8 +52,3 @@ class Config:
             {"name": "Referências"}
         ]
     }
-
-    DEFAULT_INSTRUCTIONS = """# Instruções do Trabalho
-Descreva aqui as orientações detalhadas para a geração do trabalho acadêmico.
-Inclua tópicos como objetivos, metodologia, referências obrigatórias e formato do texto.
-"""

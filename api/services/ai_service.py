@@ -4,7 +4,6 @@ AI service — wraps TemplateGenerator and FileManager for async usage.
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from academic_manager.config.settings import Config

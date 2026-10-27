@@ -25,6 +25,7 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libjpeg-dev \
+    fonts-liberation \
     zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
@@ -40,4 +41,3 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
 CMD ["python", "main.py", "--web"]
-

@@ -176,6 +176,20 @@ class TestAcademicWork:
         assert len(self.academic_work.sections) == 1
         assert self.academic_work.sections[0][0] == "Desenvolvimento"
 
+    def test_unicode_content_is_supported(self):
+        """Gera PDF com caracteres tipográficos comuns em respostas da IA."""
+        self.academic_work.add_section(
+            "Seção — teste",
+            [{"type": "paragraph", "text": "“Aspas curvas”, ação, não, … e ≤."}],
+        )
+        output_path = Path(tempfile.mkdtemp()) / "unicode.pdf"
+        try:
+            self.academic_work.output(str(output_path))
+            assert output_path.exists()
+            assert output_path.stat().st_size > 0
+        finally:
+            shutil.rmtree(output_path.parent, ignore_errors=True)
+
 
 class TestFileManager:
     """Testes para a classe FileManager"""

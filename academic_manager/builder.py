@@ -1,7 +1,9 @@
 import re
+from pathlib import Path
 from fpdf import FPDF
 from fpdf.enums import XPos, YPos
 from typing import Dict, List, Union, Tuple, Optional, Any
+from academic_manager.config.settings import Config
 
 
 def paragraph(text: str, align: str = "J", **kwargs) -> Dict[str, Any]:
@@ -255,11 +257,33 @@ class AcademicWork(FPDF):
         self.options = options or {}
         
         # Apply options
-        self.default_font = self.options.get('font', 'Arial')
+        self.default_font = self.options.get('font', Config.PDF_FONT)
+        self._register_unicode_fonts()
+        if self.default_font.lower() not in self.fonts:
+            self.default_font = "Arial"
         self.set_auto_page_break(auto=True, margin=20)
         self.set_margins(25, 25, 25)
         self.sections: List[Tuple[str, int, str]] = []
         self.anchors: Dict[str, int] = {}
+
+    def _register_unicode_fonts(self) -> None:
+        """Register the configured Unicode font when its TTF files are available."""
+        font_files = {
+            "": f"{self.default_font}-Regular.ttf",
+            "B": f"{self.default_font}-Bold.ttf",
+            "I": f"{self.default_font}-Italic.ttf",
+            "BI": f"{self.default_font}-BoldItalic.ttf",
+        }
+        registered = False
+        for style, filename in font_files.items():
+            path = Config.PDF_FONT_DIR / filename
+            if not path.is_file():
+                continue
+            self.add_font(self.default_font, style, str(path))
+            registered = True
+
+        if not registered:
+            self.default_font = "Arial"
 
     def header(self) -> None:
         """
@@ -348,11 +372,11 @@ class AcademicWork(FPDF):
         else:
             self.ln(60)
 
-        self.set_font('Arial', 'B', 12)
+        self.set_font(self.default_font, 'B', 12)
         self.cell(0, 8, self.data['local'].upper(), new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
         self.ln(5)
         self.cell(0, 8, str(self.data['ano']), new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
-        self.set_font('Arial', '', 12)
+        self.set_font(self.default_font, '', 12)
 
     def add_back_cover(self) -> None:
         """
@@ -393,7 +417,7 @@ class AcademicWork(FPDF):
 
         if len(alunos) > 1:
             self.ln(10)
-            self.set_font('Arial', '', 12)
+            self.set_font(self.default_font, '', 12)
             alunos = '\n'.join(alunos)
             self.multi_cell(0, 5, alunos, align='R')
             self.ln(20)
@@ -401,7 +425,7 @@ class AcademicWork(FPDF):
             self.ln(40)
 
         self.set_left_margin(25)
-        self.set_font('Arial', 'B', 12)
+        self.set_font(self.default_font, 'B', 12)
         self.cell(0, 8, self.data['local'].upper(), new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
         self.ln(5)
         self.cell(0, 8, str(self.data['ano']), new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
@@ -448,11 +472,11 @@ class AcademicWork(FPDF):
         """
         current_page = self.page_no()
         self.page = summary_page
-        self.set_font('Arial', 'B', 13)
+        self.set_font(self.default_font, 'B', 13)
         self.set_y(25)
         self.cell(0, 10, 'SUMÁRIO', new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
         self.ln(20)
-        self.set_font('Arial', '', 12)
+        self.set_font(self.default_font, '', 12)
 
         for title, page, link_anchor in self.sections:
             title_width = self.get_string_width(title)
@@ -485,7 +509,9 @@ class AcademicWork(FPDF):
             The font size being used
         """
         font = item.get("font", {})
-        family = font.get("family", "Arial")
+        family = font.get("family", self.default_font)
+        if family.lower() not in self.fonts:
+            family = self.default_font
         style = font.get("style") or ""
         size = font.get("size", default_size)
         if item.get("is_code"):
@@ -543,20 +569,24 @@ class AcademicWork(FPDF):
 
         y = self.get_y()
         self.set_link(link_idx, page=self.page_no(), y=y)
-        self.set_font('Arial', 'B', 12)
+        self.set_font(self.default_font, 'B', 12)
         self.cell(0, 10, section_title, new_x=XPos.LMARGIN, new_y=YPos.NEXT, align='C')
         self.ln(10)
 
         if isinstance(content, str):
-            self.set_font('Arial', '', 12)
+            self.set_font(self.default_font, '', 12)
             self.multi_cell(0, 6, content, align='J')
             return
 
         page_width = self.w - self.l_margin - self.r_margin
 
-        for item in content:
+        for index, item in enumerate(content):
             item_type = item.get("type", "paragraph")
             if item_type == "paragraph":
+                name = item.get('name', '')
+                if name:
+                    self.write_with_styles(name, 12)
+                    self.ln(6)
                 text_line = item.get("text", "")
                 matches = re.findall(r'(?<!`)`([^`]+)`(?!`)', text_line)
                 if section_title in ['REFERÊNCIAS']:
@@ -567,13 +597,105 @@ class AcademicWork(FPDF):
                     self.write_with_styles(text_line, 12)
                     self.ln(6)
                 else:
-                    fill = item.get("is_code", False) or False
+                    # Improved handling for code blocks so they always occupy
+                    # the intended block space (with pagination and padding).
+                    is_code = bool(item.get("is_code", False))
                     self._apply_font_and_color(item, default_size=12)
                     line_h = item.get("line_height", 6)
-                    self.multi_cell(0, line_h, text_line, align=item.get("align", "J"), fill=fill)
-                    self.ln(2)
-                    self.set_text_color(0, 0, 0)
-                    self.set_font('Arial', '', 12)
+
+                    if is_code:
+                        # Desired number of lines the code block should occupy
+                        target_lines = int(item.get("block_lines", 38))
+
+                        # Original code lines
+                        code_lines = text_line.split("\n") if text_line else []
+                        remaining_lines_to_write = code_lines.copy()
+                        written_block_lines = 0
+
+                        # Minimum lines that should appear at top of a new page to avoid tiny orphans
+                        min_lines_on_new_page = int(item.get("min_lines_on_new_page", 3))
+
+                        while remaining_lines_to_write:
+                            available_height = self.h - self.b_margin - self.get_y()
+                            available_lines = max(0, int(available_height / line_h))
+
+                            # If the current page has too little space to start writing safely, go to next page
+                            if available_lines < min_lines_on_new_page:
+                                self.add_page()
+                                continue
+
+                            # How many lines of the block we still need to reach the target (including future padding)
+                            remaining_block_quota = max(0, target_lines - written_block_lines)
+
+                            max_possible = min(len(remaining_lines_to_write), available_lines, remaining_block_quota if remaining_block_quota > 0 else available_lines)
+
+                            # Choose a write_count that avoids leaving a tiny remainder on the next page
+                            write_count = 0
+                            for w in range(max_possible, 0, -1):
+                                rem_code_after = len(remaining_lines_to_write) - w
+                                new_written = written_block_lines + w
+                                rem_pad_after = max(0, target_lines - new_written)
+                                total_remaining_after = rem_code_after + rem_pad_after
+
+                                if total_remaining_after == 0 or total_remaining_after >= min_lines_on_new_page:
+                                    write_count = w
+                                    break
+
+                            # If no suitable write_count found, and we can still write something, write max_possible
+                            if write_count == 0:
+                                if max_possible > 0:
+                                    write_count = max_possible
+                                else:
+                                    # nothing fits, go to next page
+                                    self.add_page()
+                                    continue
+
+                            chunk = "\n".join(remaining_lines_to_write[:write_count])
+                            self.multi_cell(0, line_h, chunk, align=item.get("align", "J"), fill=True)
+                            written_block_lines += write_count
+                            remaining_lines_to_write = remaining_lines_to_write[write_count:]
+
+                            # If there are still code lines left, move to new page to continue
+                            if remaining_lines_to_write:
+                                self.add_page()
+
+                        # After writing all code content, add padded blank lines (with fill) to reach the target block size.
+                        if written_block_lines < target_lines:
+                            pad_lines = target_lines - written_block_lines
+
+                            # First, try to place as many pad lines as possible on the current page
+                            available_height = self.h - self.b_margin - self.get_y()
+                            available_lines = max(0, int(available_height / line_h))
+                            place_here = min(pad_lines, available_lines)
+                            if place_here > 0:
+                                pad_chunk = "\n" * place_here
+                                self.multi_cell(0, line_h, pad_chunk, align=item.get("align", "J"), fill=True)
+                                pad_lines -= place_here
+
+                            # If remaining pad lines are too few to justify creating a new page, skip them
+                            # to avoid generating a page that contains only a tiny fill fragment.
+                            if 0 < pad_lines < min_lines_on_new_page:
+                                # Skip remaining pad to avoid orphan page
+                                pad_lines = 0
+
+                            # Otherwise, do not create new pages just for padding —
+                            # to avoid producing pages that contain only padded fill.
+                            # We leave any remaining pad unapplied.
+                            if pad_lines > 0:
+                                # Intentionally skip creating extra pages for pad.
+                                pad_lines = 0
+
+                        self.ln(2)
+                        # restore defaults
+                        self.set_text_color(0, 0, 0)
+                        self.set_font(self.default_font, '', 12)
+
+                    else:
+                        # Regular paragraph behavior
+                        self.multi_cell(0, line_h, text_line, align=item.get("align", "J"), fill=False)
+                        self.ln(2)
+                        self.set_text_color(0, 0, 0)
+                        self.set_font(self.default_font, '', 12)
 
             elif item_type == "subtitle":
                 self._apply_font_and_color(item, default_size=14)
@@ -581,7 +703,7 @@ class AcademicWork(FPDF):
                 self.multi_cell(0, line_h, item.get("text", ""), align=item.get("align", "L"))
                 self.ln(3)
                 self.set_text_color(0, 0, 0)
-                self.set_font('Arial', '', 12)
+                self.set_font(self.default_font, '', 12)
 
             elif item_type == "image" and not ignore_img:
                 pos = item.get("position", "right")
@@ -654,7 +776,7 @@ class AcademicWork(FPDF):
 
                     self.set_xy(self.l_margin, final_y + 5)
                     self.set_text_color(0, 0, 0)
-                    self.set_font('Arial', '', 12)
+                    self.set_font(self.default_font, '', 12)
 
                 elif pos in ("left", "right") and not text:
                     img_x = self.l_margin if pos == "left" else (self.w - self.r_margin - img_w)
@@ -676,7 +798,7 @@ class AcademicWork(FPDF):
                         self._apply_font_and_color(item)
                         self.multi_cell(0, line_h, text, align=item.get("align", "J"))
                         self.set_text_color(0, 0, 0)
-                        self.set_font('Arial', '', 12)
+                        self.set_font(self.default_font, '', 12)
                         self.ln(3)
 
                 elif pos == "below":
@@ -684,7 +806,7 @@ class AcademicWork(FPDF):
                         self._apply_font_and_color(item)
                         self.multi_cell(0, line_h, text, align=item.get("align", "J"))
                         self.set_text_color(0, 0, 0)
-                        self.set_font('Arial', '', 12)
+                        self.set_font(self.default_font, '', 12)
                         self.ln(2)
 
                     img_x = self.l_margin + (page_width - img_w) / 2
@@ -704,7 +826,7 @@ class AcademicWork(FPDF):
 
             elif item_type == "list":
                 self.set_text_color(0, 0, 0)
-                self.set_font('Arial', '', 12)
+                self.set_font(self.default_font, '', 12)
                 for text_line in item.get("items", []):
                     # self.multi_cell(0, 6, text_line.replace("—", "-"), align="J")
                     # self.ln(2)
@@ -714,7 +836,7 @@ class AcademicWork(FPDF):
                     self.ln(8)
 
         self.set_text_color(0, 0, 0)
-        self.set_font('Arial', '', 12)
+        self.set_font(self.default_font, '', 12)
 
     def write_with_styles(self, text, font_size: int = 10):
         # Divide em partes: **negrito** ou `italico`
@@ -723,17 +845,17 @@ class AcademicWork(FPDF):
         for part in parts:
             if part.startswith("**") and part.endswith("**"):
                 # Negrito
-                self.set_font('Arial', 'BI', font_size)
+                self.set_font(self.default_font, 'BI', font_size)
                 self.write(6, part[2:-2])
 
             elif part.startswith("`") and part.endswith("`"):
                 # Itálico (para texto entre crases)
-                self.set_font('Arial', 'I', font_size)
+                self.set_font(self.default_font, 'I', font_size)
                 self.write(6, part[1:-1])
 
             else:
                 # Normal
-                self.set_font('Arial', '', 12)
+                self.set_font(self.default_font, '', 12)
                 self.write(6, part)
 
 
@@ -752,7 +874,7 @@ class AcademicWork(FPDF):
             None
         """
         self.set_text_color(0, 0, 0)
-        self.set_font('Arial', '', 12)
+        self.set_font(self.default_font, '', 12)
 
         for reference in references:
             match = re.match(
@@ -847,9 +969,9 @@ class AcademicWork(FPDF):
                 continue
 
             if i % 2 == 1:
-                self.set_font('Arial', 'B', 12)
+                self.set_font(self.default_font, 'B', 12)
             else:
-                self.set_font('Arial', '', 12)
+                self.set_font(self.default_font, '', 12)
 
             self.write(6, part)
 

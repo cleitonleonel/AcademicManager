@@ -4,6 +4,7 @@ from academic_manager.config.settings import Config
 from academic_manager.core.file_manager import FileManager
 from academic_manager.core.template_generator import TemplateGenerator
 from academic_manager.core.pdf_generator import PDFGenerator
+from academic_manager.core.pptx_generator import PPTXGenerator
 from academic_manager.core.project_manager import ProjectManager
 from academic_manager.ui.interface import UserInterface
 
@@ -28,6 +29,7 @@ class AcademicManager:
         self.project_manager = ProjectManager()
         self.template_generator = TemplateGenerator()
         self.pdf_generator = PDFGenerator()
+        self.pptx_generator = PPTXGenerator()
 
     def _handle_template_generation(self, project_name: str, metadata: Dict) -> Optional[Dict]:
         """
@@ -143,7 +145,31 @@ class AcademicManager:
             if not template:
                 continue
 
-            if self.pdf_generator.generate_pdf(project_name, metadata, template):
+            # Decision point for formats
+            print("\nQual formato de saída deseja gerar?")
+            print("1: Apenas Trabalho Escrito (PDF - Normas ABNT)")
+            print("2: Apenas Apresentação de Slides (PPTX - PowerPoint)")
+            print("3: Ambos os formatos (PDF e PPTX)")
+            
+            output_choice = UserInterface.get_user_choice(
+                "Escolha o formato de saída",
+                ['1', '2', '3']
+            )
+            if output_choice == 'q':
+                continue
+            if output_choice is None:
+                continue
+
+            success = True
+            if output_choice in ['1', '3']:
+                success_pdf = self.pdf_generator.generate_pdf(project_name, metadata, template)
+                success = success and success_pdf
+
+            if output_choice in ['2', '3']:
+                success_pptx = self.pptx_generator.generate_pptx(project_name, metadata, template)
+                success = success and success_pptx
+
+            if success:
                 print("\n✓ Processo concluído com sucesso!")
 
             print("\n" + "=" * 50 + "\n")

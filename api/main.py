@@ -17,7 +17,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from api.models import HealthResponse, StatsResponse
-from api.routes import ai, pdf, projects, system
+from api.routes import ai, pdf, pptx, projects, system
 from api.services import project_service as proj_svc
 
 # ---------------------------------------------------------------------------
@@ -53,6 +53,7 @@ app.add_middleware(
 app.include_router(system.router, prefix="/api")
 app.include_router(projects.router, prefix="/api")
 app.include_router(pdf.router, prefix="/api")
+app.include_router(pptx.router, prefix="/api")
 app.include_router(ai.router, prefix="/api")
 
 # ---------------------------------------------------------------------------

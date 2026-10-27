@@ -290,9 +290,6 @@ def temp_project_structure(temp_workspace):
     with open(project_path / "settings.json", "w", encoding="utf-8") as f:
         json.dump(settings_data, f, ensure_ascii=False, indent=4)
 
-    with open(project_path / "instructions.md", "w", encoding="utf-8") as f:
-        f.write("# Instruções do Projeto\nDescrição das instruções...")
-
     # Cria arquivos de origem (logo, máscara)
     (project_path / "sources" / "logo.png").write_bytes(b'fake_png_data')
     (project_path / "sources" / "mask.png").write_bytes(b'fake_png_mask')

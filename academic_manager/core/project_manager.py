@@ -87,10 +87,6 @@ class ProjectManager:
         with open(settings_file, "w", encoding="utf-8") as f:
             json.dump(metadata, f, ensure_ascii=False, indent=4)
 
-        instructions_file = project_path / "instructions.md"
-        with open(instructions_file, "w", encoding="utf-8") as f:
-            f.write(Config.DEFAULT_INSTRUCTIONS)
-
     def _save_assignment_file(self, project_name: str, assignment_path: Path, content: str) -> None:
         """
         Saves the assignment content to a specified file path.
@@ -104,13 +100,6 @@ class ProjectManager:
         assignment_file = assignment_path / f'{project_name}.md'
         with open(assignment_file, "w", encoding="utf-8") as f:
             f.write(content)
-
-        # Also save as prompt.txt in the project directory to mark as 'In Progress'
-        project_dir = Config.BASE_DIR / project_name
-        if project_dir.exists():
-            prompt_file = project_dir / "prompt.txt"
-            with open(prompt_file, "w", encoding="utf-8") as f:
-                f.write(content)
 
     def _collect_metadata(self, existing_metadata: Optional[Dict] = None) -> Dict:
         """

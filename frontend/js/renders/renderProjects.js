@@ -46,6 +46,27 @@ export async function generatePDF(projectId) {
   }
 }
 
+/** Generate and download a PPTX for the given project. */
+export async function generatePPTX(projectId) {
+  try {
+    setLoading(true, 'Gerando Slides PPTX…');
+    // 1. Trigger generation
+    await apiRequest(`/projects/${projectId}/pptx`, { method: 'POST' });
+    // 2. Download the resulting file
+    const blobUrl = await downloadFile(`/projects/${projectId}/pptx/download`);
+    const anchor = document.createElement('a');
+    anchor.href = blobUrl;
+    anchor.download = `${projectId}.pptx`;
+    anchor.click();
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 10_000);
+    notify('Slides PPTX gerados e download iniciado!', 'success');
+  } catch (err) {
+    notify(`Erro ao gerar PPTX: ${err.message}`, 'error');
+  } finally {
+    setLoading(false);
+  }
+}
+
 /** Navigate to the edit form for the given project. */
 export async function editProject(projectId) {
   setLoading(true, 'Carregando dados do projeto...');
@@ -163,6 +184,10 @@ export function renderProjects() {
           <button class="btn btn-success btn-file" data-action="pdf" title="Gerar e baixar PDF">
             <i class="fas fa-file-pdf"></i> PDF
           </button>
+          <button class="btn btn-pptx" data-action="pptx" title="Gerar e baixar PPTX (Slides)"
+                  style="background-color:#D24726; border-color:#D24726; color:white;">
+            <i class="fas fa-file-powerpoint"></i> PPTX
+          </button>
           <button class="btn btn-danger btn-delete" data-action="delete" title="Remover projeto"
                   style="padding:8px 12px;">
             <i class="fas fa-trash"></i>
@@ -177,6 +202,9 @@ export function renderProjects() {
   );
   container.querySelectorAll('.btn-file').forEach(btn =>
     btn.addEventListener('click', () => generatePDF(btn.closest('.project-card').dataset.id))
+  );
+  container.querySelectorAll('.btn-pptx').forEach(btn =>
+    btn.addEventListener('click', () => generatePPTX(btn.closest('.project-card').dataset.id))
   );
   container.querySelectorAll('.btn-delete').forEach(btn =>
     btn.addEventListener('click', () => deleteProject(btn.closest('.project-card').dataset.id))

@@ -1,8 +1,52 @@
-academic_projects
+# Configuração local e segredos
 config.ini
-__pycache__
-__legacy__
-venv_academic
-venv
 .env
-.venv
+.env.*
+!.env.example
+*.local
+*.local.*
+
+# Projetos e arquivos gerados pela aplicação
+academic_projects/
+__legacy__/
+comprovante_termico.pdf
+scratch/
+
+# Ambientes virtuais e caches Python
+venv/
+venv_academic/
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Artefatos de empacotamento e build
+build/
+dist/
+*.egg-info/
+
+# Artefatos gerados por testes e planejamento
+tests/*.pdf
+tests/*.xlsx
+tests/planejamento_PI.json
+
+# Logs e arquivos temporários
+*.log
+*.tmp
+*.temp
+*.bak
+
+# IDEs e ferramentas locais
+.idea/
+.vscode/
+*.iml
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
